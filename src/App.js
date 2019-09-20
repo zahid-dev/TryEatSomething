@@ -16,7 +16,7 @@ class App extends Component {
       // <View style={{ flexDirection: 'row',flex: 1, height: 50,marginTop: 10, }}>
       /* <Button onPress={() => firebase.auth().signOut()}>Log Out</Button> */
       // </View>
-      <View>
+      <View style={styles.parentContainer}>
         <View style={styles.headerStyle}>
           <Image style={styles.imgStyle} source={Values.Images.BLACK_PIC} />
           <TextInput
@@ -28,7 +28,7 @@ class App extends Component {
             value={this.state.value}
           />
         </View>
-        <ScrollView>
+        <ScrollView style={styles.scrollContainer}>
           <View style={styles.feedCardStyle}>
             <View style={styles.feedCardHeaderStyle}>
               <Image
@@ -58,21 +58,58 @@ class App extends Component {
               <Text style={styles.feedCardBottomBarText}>
                 Details on what user eat and etc, just like social update post
               </Text>
-              <TouchableOpacity style={styles.buttonStyle}>
-                <Text style={styles.buttontextStyle}>Add To Plan</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonStyle}>
-                <Text style={styles.buttontextStyle}>Get Directions</Text>
-              </TouchableOpacity>
+              <View style={styles.feedCardBottomBarButtonContainer}>
+                <View style={styles.buttonSideSpacer} />
+                <TouchableOpacity style={styles.buttonStyle}>
+                  <Text style={styles.buttontextStyle}>Add To Plan</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonStyle}>
+                  <Text style={styles.buttontextStyle}>Get Directions</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </ScrollView>
+        <View style={styles.bottomBarContainer}>
+          <View style={styles.bottomItemLayout}>
+            <Image
+              style={styles.imgbottomStyle}
+              source={Values.Images.BLACK_PIC}
+            />
+            <Text style={styles.bottomBarTextStyle}>Feed</Text>
+          </View>
+          <View style={styles.bottomItemLayout}>
+            <Image
+              style={styles.imgbottomStyle}
+              source={Values.Images.BLACK_PIC}
+            />
+            <Text style={styles.bottomBarTextStyle}>Restaurants</Text>
+          </View>
+          <View style={styles.bottomItemLayout}>
+            <Image
+              style={styles.imgbottomStyle}
+              source={Values.Images.BLACK_PIC}
+            />
+            <Text style={styles.bottomBarTextStyle}>Plans</Text>
+          </View>
+          <View style={styles.bottomItemLayout}>
+            <Image
+              style={styles.imgbottomStyle}
+              source={Values.Images.BLACK_PIC}
+            />
+            <Text style={styles.bottomBarTextStyle}>Chats</Text>
+          </View>
+        </View>
       </View>
     );
   }
 }
 
 const styles = {
+  parentContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
   headerStyle: {
     backgroundColor: '#F8F8F8',
     alignItems: 'center',
@@ -203,32 +240,64 @@ const styles = {
     color: '#000',
     backgroundColor: '#fff',
     justifyContent: 'flex-start',
-    flexDirection: 'row',
     borderColor: '#000',
-    position: 'relative',
-    flex: 1,
+  },
+  feedCardBottomBarButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  buttonSideSpacer: {
+    flex: 4,
   },
   buttonStyle: {
-    alighSelf: 'flex-end',
     backgroundColor: '#000',
     borderRadius: 5,
     borderWidth: 1,
+    flex: 6,
     borderColor: '#000 ',
-    marginLeft: 10,
-    marginRight: 10,
-    marginTop: 10,
-    marginBottom: 10,
+    marginLeft: 5,
+    marginRight: 5,
+    marginTop: 5,
+    marginBottom: 5,
   },
   buttontextStyle: {
     alignSelf: 'center',
     color: '#fff',
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '600',
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
   },
   feedCardBottomBarText: {
     flexWrap: 'wrap',
+  },
+  scrollContainer: {
+    flex: 1,
+    height: 300,
+  },
+  bottomBarContainer: {
+    backgroundColor: '#F8F8F8',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: 60,
+    position: 'relative',
+    flexDirection: 'row',
+    elevation: 5,
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
+  bottomItemLayout: {
+    flexDirection: 'column',
+    paddingTop: 5,
+  },
+  bottomBarTextStyle: {
+    fontSize: 12,
+  },
+  imgbottomStyle: {
+    height: 25,
+    width: 25,
+    borderRadius: 15,
+    justifyContent: 'center',
   },
 };
 
