@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "990266820976",
+    "firebase_url": "https://tryeatsomething.firebaseio.com",
+    "project_id": "tryeatsomething",
+    "storage_bucket": "tryeatsomething.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990266820976:android:691bf7761e40756d99e7b5",
+        "android_client_info": {
+          "package_name": "com.tryeatsomething"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "990266820976-5hk92lba6splvd81psvsqog8ecckin86.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tryeatsomething",
+            "certificate_hash": "2eaac9e7545e6384d97e3443e36b975ef53e1630"
+          }
+        },
+        {
+          "client_id": "990266820976-rb08e4luso512qndhkok9uqcl66vok7h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqLiFowUhyEJqPHFvPpirNBIRiQEbex4k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "990266820976-rb08e4luso512qndhkok9uqcl66vok7h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
