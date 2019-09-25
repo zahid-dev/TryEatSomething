@@ -1,64 +1,57 @@
 import React, {Component} from 'react';
-import {View, Button} from 'react-native';
-import firebase from 'react-native-firebase';
+import {
+  StyleSheet,
+  Platform,
+  Image,
+  Text,
+  View,
+  Button,
+  ScrollView,
+} from 'react-native';
+import FirebaseLogin from './FirebaseLogin';
+import firebase from './components/FirebaseConfig';
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-import {Header, Spinner} from './components/common';
-import LoginForm from './components/LoginForm';
+import Restaurants from './components/Restaurants';
+import RestaurantDetails from './components/RestaurantDetails';
+import Recommend from './components/Recommend';
+
 class HomeScreen extends React.Component {
-  state = {loggedIn: null, email: ''};
-  _isMounted = false;
+  state = {isLogin: false};
+
   componentDidMount() {
-    this._isMounted = true;
-    if (this._isMounted) {
-      firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          this.setState({loggedIn: true});
-          //console.log(user.email);
-          this.setState({email: user.email});
-        } else {
-          this.setState({loggedIn: false});
-        }
-      });
-    }
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.setState({isLogin: true});
+        console.warn(user);
+      } else {
+        this.setState({isLogin: false});
+      }
+    });
   }
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  renderContent() {
-    switch (this.state.loggedIn) {
-      case true:
-        return (
-          // <View style={{ flexDirection: 'row',flex: 1, height: 50,marginTop: 10, }}>
-          /* <Button onPress={() => firebase.auth().signOut()}>Log Out</Button> */
-          // </View>
-          <View>
-            <Header headerText="Dairy Hawk" />
-            {/* <DatePickerForm email={this.state.email} /> */}
-            <Button title="Log Out" onPress={() => firebase.auth().signOut()} />
-          </View>
-        );
-      case false:
-        return (
-          <View>
-            <Header headerText="Authentication" />
-            <LoginForm />
-          </View>
-        );
-      default:
-        return <Spinner size="large" />;
-    }
-  }
-
   render() {
-    return <View>{this.renderContent()}</View>;
+    if (!this.state.isLogin) {
+      return (
+        <ScrollView>
+          <FirebaseLogin login={user => console.warn(user)} />
+        </ScrollView>
+      );
+    }
+    if (this.state.isLogin) {
+      return (
+        <ScrollView>
+          <Restaurants />
+        </ScrollView>
+      );
+    }
   }
 }
 
 const RootStack = createStackNavigator(
   {
     Home: HomeScreen,
+    restaurantDetail: RestaurantDetails,
+    recommend: Recommend,
   },
   {
     initialRouteName: 'Home',
@@ -68,10 +61,8 @@ const RootStack = createStackNavigator(
 
 const AppContainer = createAppContainer(RootStack);
 
-type Props = {};
-class App extends Component<Props> {
+export default class App extends Component {
   render() {
     return <AppContainer />;
   }
 }
-export default App;
