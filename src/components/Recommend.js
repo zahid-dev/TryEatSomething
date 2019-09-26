@@ -13,7 +13,7 @@ class Recommend extends React.Component {
   addToDB(id, rating, waittime, description) {
     const newRecommendKey = firebase
       .database()
-      .ref(`recommend`)
+      .ref('recommend')
       .push().key;
     const unixTimeStamp = Date.now();
     firebase.auth().onAuthStateChanged(user => {
@@ -23,8 +23,116 @@ class Recommend extends React.Component {
           .ref(`restaurant/${id}`)
           .once('value', snapshot => {
             if (snapshot.exists()) {
-              const userData = snapshot.val();
-              console.warn('exists!', userData);
+              firebase
+                .database()
+                .ref(`restaurant/${id}`)
+                .child('AggRating')
+                .once(
+                  'value',
+                  snapshot1 => {
+                    const newRating =
+                      (parseInt(snapshot1.val()) + parseInt(rating)) / 2;
+
+                    snapshot.ref.child('AggRating').set(newRating);
+                  },
+                  err => {
+                    console.warn(
+                      'Failed to update rating' + JSON.stringify(err),
+                    );
+                  },
+                );
+              firebase
+                .database()
+                .ref(`restaurant/${id}`)
+                .child('AggWaittime')
+                .once(
+                  'value',
+                  snapshot2 => {
+                    const newTime =
+                      (parseInt(snapshot2.val()) + parseInt(waittime)) / 2;
+
+                    snapshot.ref.child('AggWaittime').set(newTime);
+                  },
+                  err => {
+                    console.warn(
+                      'Failed to update waittime' + JSON.stringify(err),
+                    );
+                  },
+                );
+
+              firebase
+                .database()
+                .ref(`restaurant/${id}`)
+                .child('numberOfRatings')
+                .once(
+                  'value',
+                  snapshot3 => {
+                    const newNumofRatings = parseInt(snapshot3.val()) + 1;
+
+                    snapshot.ref.child('numberOfRatings').set(newNumofRatings);
+                  },
+                  err => {
+                    console.warn(
+                      'Failed to update numofrating' + JSON.stringify(err),
+                    );
+                  },
+                );
+
+              firebase
+                .database()
+                .ref(`users/${user.uid}`)
+                .child('totalRecommendations')
+                .once(
+                  'value',
+                  snapshot4 => {
+                    const newRecommendations = parseInt(snapshot4.val()) + 1;
+
+                    firebase
+                      .database()
+                      .ref(`users/${user.uid}`)
+                      .child('totalRecommendations')
+                      .set(newRecommendations);
+                  },
+                  err => {
+                    console.warn(
+                      'Failed to update numofrating' + JSON.stringify(err),
+                    );
+                  },
+                );
+
+              firebase
+                .database()
+                .ref(`recommendations/${newRecommendKey}`)
+                .set({
+                  restaurantKey: id,
+                  description: description,
+                  rating: rating,
+                  waittime: waittime,
+                  uid: user.uid,
+                  timeStamp: unixTimeStamp,
+                  priority: -unixTimeStamp,
+                });
+              firebase
+                .database()
+                .ref(`restaurant/${id}`)
+                .child('recommendations')
+                .update({
+                  [newRecommendKey]: -unixTimeStamp,
+                });
+              firebase
+                .database()
+                .ref(`userData/${user.uid}`)
+                .child('recommendations')
+                .update({
+                  [newRecommendKey]: -unixTimeStamp,
+                });
+              firebase
+                .database()
+                .ref(`userData/${user.uid}`)
+                .child('feed')
+                .update({
+                  [newRecommendKey]: -unixTimeStamp,
+                });
             } else {
               firebase
                 .database()
@@ -42,32 +150,53 @@ class Recommend extends React.Component {
                 .database()
                 .ref(`restaurant/${id}`)
                 .set({
-                  rating: rating,
-                  waittime: waittime,
-                  numberOfRatings: 0,
+                  AggRating: rating,
+                  AggWaittime: waittime,
+                  numberOfRatings: 1,
                   recommendations: true,
                 });
               firebase
                 .database()
                 .ref(`restaurant/${id}`)
-                .child(`recommendations`)
+                .child('recommendations')
                 .update({
                   [newRecommendKey]: -unixTimeStamp,
                 });
               firebase
                 .database()
                 .ref(`userData/${user.uid}`)
-                .child(`recommendations`)
+                .child('recommendations')
                 .update({
                   [newRecommendKey]: -unixTimeStamp,
                 });
               firebase
                 .database()
                 .ref(`userData/${user.uid}`)
-                .child(`feed`)
+                .child('feed')
                 .update({
                   [newRecommendKey]: -unixTimeStamp,
                 });
+              firebase
+                .database()
+                .ref(`users/${user.uid}`)
+                .child('totalRecommendations')
+                .once(
+                  'value',
+                  snapshot4 => {
+                    const newRecommendations = parseInt(snapshot4.val()) + 1;
+
+                    firebase
+                      .database()
+                      .ref(`users/${user.uid}`)
+                      .child('totalRecommendations')
+                      .set(newRecommendations);
+                  },
+                  err => {
+                    console.warn(
+                      'Failed to update numofrating' + JSON.stringify(err),
+                    );
+                  },
+                );
             }
           });
       }
