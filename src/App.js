@@ -10,14 +10,9 @@ import {
 } from 'react-native';
 import FirebaseLogin from './FirebaseLogin';
 import firebase from './components/FirebaseConfig';
-import {createAppContainer} from 'react-navigation';
-import {createStackNavigator} from 'react-navigation-stack';
-import Restaurants from './components/Restaurants';
-import RestaurantDetails from './components/RestaurantDetails';
-import Recommend from './components/Recommend';
-import Users from './components/Users';
+import Navigator from './components/Navigator';
 
-class HomeScreen extends React.Component {
+class App extends React.Component {
   state = {isLogin: false, uid: ''};
 
   componentDidMount() {
@@ -43,30 +38,11 @@ class HomeScreen extends React.Component {
     if (this.state.isLogin) {
       return (
         <ScrollView>
-          <Restaurants userID={this.state.uid} />
+          <Navigator userID={this.state.uid} />
         </ScrollView>
       );
     }
   }
 }
 
-const RootStack = createStackNavigator(
-  {
-    Home: HomeScreen,
-    restaurantDetail: RestaurantDetails,
-    recommend: Recommend,
-    users: Users,
-  },
-  {
-    initialRouteName: 'Home',
-    headerMode: 'none',
-  },
-);
-
-const AppContainer = createAppContainer(RootStack);
-
-export default class App extends Component {
-  render() {
-    return <AppContainer />;
-  }
-}
+export default App;

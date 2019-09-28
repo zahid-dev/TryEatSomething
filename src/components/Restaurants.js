@@ -27,8 +27,8 @@ class Restaurants extends React.Component {
     axios
       // eslint-disable-next-line no-undef
       .get(
-        'https://api.foursquare.com/v2/venues/' +
-          this.state.type +
+        // 'https://api.foursquare.com/v2/venues/' +
+        this.state.type +
           '?client_id=0ZRQFYTWFUAOKLRVJ3I3W1VKW0FUGDQL5RZ24N0O4JWMSPJG&client_secret=VWJPW1FDJHZZNZSMTQOOEJETX5TZBCH0G5R4WYWA1IGL1OLZ&v=20150729&near=' +
           this.state.location +
           '&query=' +

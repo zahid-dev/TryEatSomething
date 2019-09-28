@@ -219,7 +219,9 @@ class Users extends React.Component {
   render() {
     const {navigation} = this.props;
     const userID = navigation.getParam('userID');
-    return <View>{this.populateUsers(this.state.dataArray, userID)}</View>;
+    return (
+      <View>{/* {this.populateUsers(this.state.dataArray, userID)} */}</View>
+    );
   }
 }
 
