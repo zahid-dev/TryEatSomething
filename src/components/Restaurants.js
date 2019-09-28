@@ -94,7 +94,7 @@ class Restaurants extends React.Component {
     });
   }
   usersPageNav() {
-    this.props.navigation.navigate('users');
+    this.props.navigation.navigate('users', {userID: this.props.userID});
   }
   render() {
     console.warn(this.props.userID);

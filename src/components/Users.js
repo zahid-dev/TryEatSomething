@@ -15,163 +15,175 @@ import axios from 'axios';
 
 class Users extends React.Component {
   state = {dataArray: []};
-  componentDidMount() {
-    this.getUsers();
+  componentDidMount() {}
+  getUsers(userID) {
+    firebase
+      .database()
+      .ref('users')
+      .once('value', snapshot => {
+        const data = [];
+        snapshot.forEach(uids => {
+          if (uids.key === userID) {
+          } else {
+            var obj = {
+              uid: uids.key,
+              totalFollowers: uids.val().totalFollowers,
+              totalFollowing: uids.val().totalFollowing,
+              name: uids.val().Name,
+            };
+            data.push(obj);
+          }
+        });
+        this.setState({dataArray: data});
+      });
   }
-  getUsers() {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        firebase
-          .database()
-          .ref('users')
-          .once('value', snapshot => {
-            const data = [];
-            snapshot.forEach(uids => {
-              if (uids.key === user.uid) {
-              } else {
-                var obj = {
-                  uid: uids.key,
-                  totalFollowers: uids.val().totalFollowers,
-                  totalFollowing: uids.val().totalFollowing,
-                  name: uids.val().Name,
-                };
-                data.push(obj);
-              }
+
+  followUser(uid, userID) {
+    firebase
+      .database()
+      .ref(`userData/${userID}`)
+      .child('following')
+      .update({
+        [uid]: true,
+      });
+    firebase
+      .database()
+      .ref(`userData/${uid}`)
+      .child('followers')
+      .update({
+        [userID]: true,
+      });
+    firebase
+      .database()
+      .ref(`userData/${uid}/recommendations`)
+      .once('value', snapshot => {
+        snapshot.forEach(feed => {
+          firebase
+            .database()
+            .ref(`userData/${userID}/feed`)
+            .update({
+              [feed.key]: feed.val(),
             });
-            this.setState({dataArray: data});
-          });
-      }
-    });
+        });
+      });
+    firebase
+      .database()
+      .ref(`users/${uid}`)
+      .child('totalFollowers')
+      .once(
+        'value',
+        snapshot4 => {
+          const totalFollowers = parseInt(snapshot4.val()) + 1;
+
+          firebase
+            .database()
+            .ref(`users/${uid}`)
+            .child('totalFollowers')
+            .set(totalFollowers);
+        },
+        err => {
+          console.warn('Failed to update followers' + JSON.stringify(err));
+        },
+      );
+    firebase
+      .database()
+      .ref(`users/${userID}`)
+      .child('totalFollowing')
+      .once(
+        'value',
+        snapshot4 => {
+          const totalFollowing = parseInt(snapshot4.val()) + 1;
+
+          firebase
+            .database()
+            .ref(`users/${userID}`)
+            .child('totalFollowing')
+            .set(totalFollowing);
+        },
+        err => {
+          console.warn('Failed to update following' + JSON.stringify(err));
+        },
+      );
   }
-  followUser(uid) {
-    firebase.auth().onAuthStateChanged(id => {
-      if (id) {
-        firebase
-          .database()
-          .ref(`userData/${id.uid}`)
-          .child('following')
-          .update({
-            [uid]: true,
-          });
-        firebase
-          .database()
-          .ref(`userData/${uid}`)
-          .child('followers')
-          .update({
-            [id.uid]: true,
-          });
-        firebase
-          .database()
-          .ref(`userData/${uid}/recommendations`)
-          .once('value', snapshot => {
-            snapshot.forEach(feed => {
-              firebase
-                .database()
-                .ref(`userData/${id.uid}`)
-                .child('followers')
-                .update({
-                  [feed.key]: feed.data,
-                });
+
+  unfollowUser(uid, userID) {
+    firebase
+      .database()
+      .ref(`userData/${userID}/following`)
+      .child(uid)
+      .remove();
+    firebase
+      .database()
+      .ref(`userData/${uid}/followers`)
+      .child(userID)
+      .remove();
+    firebase
+      .database()
+      .ref(`userData/${userID}/feed`)
+      .once('value', snapshot => {
+        snapshot.forEach(feed => {
+          firebase
+            .database()
+            .ref(`userData/${uid}`)
+            .child('recommendations')
+            .once('value', snapshot1 => {
+              snapshot1.forEach(recommend => {
+                if (
+                  feed.key === recommend.key &&
+                  feed.val() === recommend.val()
+                ) {
+                  firebase
+                    .database()
+                    .ref(`userData/${userID}/feed`)
+                    .child(recommend.key)
+                    .remove();
+                }
+              });
             });
-          });
-        firebase
-          .database()
-          .ref(`users/${uid}`)
-          .child('totalFollowers')
-          .once(
-            'value',
-            snapshot4 => {
-              const totalFollowers = parseInt(snapshot4.val()) + 1;
+        });
+      });
+    firebase
+      .database()
+      .ref(`users/${uid}`)
+      .child('totalFollowers')
+      .once(
+        'value',
+        snapshot4 => {
+          const totalFollowers = parseInt(snapshot4.val()) - 1;
 
-              firebase
-                .database()
-                .ref(`users/${uid}`)
-                .child('totalFollowers')
-                .set(totalFollowers);
-            },
-            err => {
-              console.warn('Failed to update followers' + JSON.stringify(err));
-            },
-          );
-        firebase
-          .database()
-          .ref(`users/${id.uid}`)
-          .child('totalFollowing')
-          .once(
-            'value',
-            snapshot4 => {
-              const totalFollowing = parseInt(snapshot4.val()) + 1;
+          firebase
+            .database()
+            .ref(`users/${uid}`)
+            .child('totalFollowers')
+            .set(totalFollowers);
+        },
+        err => {
+          console.warn('Failed to update followers' + JSON.stringify(err));
+        },
+      );
+    firebase
+      .database()
+      .ref(`users/${userID}`)
+      .child('totalFollowing')
+      .once(
+        'value',
+        snapshot4 => {
+          const totalFollowing = parseInt(snapshot4.val()) - 1;
 
-              firebase
-                .database()
-                .ref(`users/${id.uid}`)
-                .child('totalFollowing')
-                .set(totalFollowing);
-            },
-            err => {
-              console.warn('Failed to update following' + JSON.stringify(err));
-            },
-          );
-      }
-    });
+          firebase
+            .database()
+            .ref(`users/${userID}`)
+            .child('totalFollowing')
+            .set(totalFollowing);
+        },
+        err => {
+          console.warn('Failed to update following' + JSON.stringify(err));
+        },
+      );
   }
-  unfollowUser(uid) {
-    firebase.auth().onAuthStateChanged(id => {
-      if (id) {
-        firebase
-          .database()
-          .ref(`userData/${id.uid}/following`)
-          .child(uid)
-          .remove();
-        firebase
-          .database()
-          .ref(`userData/${uid}/followers`)
-          .child(id.uid)
-          .remove();
-
-        firebase
-          .database()
-          .ref(`users/${uid}`)
-          .child('totalFollowers')
-          .once(
-            'value',
-            snapshot4 => {
-              const totalFollowers = parseInt(snapshot4.val()) - 1;
-
-              firebase
-                .database()
-                .ref(`users/${uid}`)
-                .child('totalFollowers')
-                .set(totalFollowers);
-            },
-            err => {
-              console.warn('Failed to update followers' + JSON.stringify(err));
-            },
-          );
-        firebase
-          .database()
-          .ref(`users/${id.uid}`)
-          .child('totalFollowing')
-          .once(
-            'value',
-            snapshot4 => {
-              const totalFollowing = parseInt(snapshot4.val()) - 1;
-
-              firebase
-                .database()
-                .ref(`users/${id.uid}`)
-                .child('totalFollowing')
-                .set(totalFollowing);
-            },
-            err => {
-              console.warn('Failed to update following' + JSON.stringify(err));
-            },
-          );
-      }
-    });
-  }
-  populateUsers(DatArray) {
+  populateUsers(DatArray, userID) {
     console.log(DatArray);
+    this.getUsers(userID);
     return (
       <FlatList
         // eslint-disable-next-line prettier/prettier
@@ -189,11 +201,11 @@ class Users extends React.Component {
               <CardSection>
                 <Button
                   title="Follow"
-                  onPress={() => this.followUser(item.uid)}
+                  onPress={() => this.followUser(item.uid, userID)}
                 />
                 <Button
                   title="UnFollow"
-                  onPress={() => this.unfollowUser(item.uid)}
+                  onPress={() => this.unfollowUser(item.uid, userID)}
                 />
               </CardSection>
             </View>
@@ -205,7 +217,9 @@ class Users extends React.Component {
   }
 
   render() {
-    return <View>{this.populateUsers(this.state.dataArray)}</View>;
+    const {navigation} = this.props;
+    const userID = navigation.getParam('userID');
+    return <View>{this.populateUsers(this.state.dataArray, userID)}</View>;
   }
 }
 
