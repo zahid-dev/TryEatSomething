@@ -23,6 +23,7 @@ class Firebase {
         .then(user => {
           if (user) {
             resolve(user);
+            console.warn('Done: login');
           }
         });
     });
@@ -49,13 +50,28 @@ class Firebase {
           }
           resolve(false);
         })
-        .then(info => {
-          if (info) {
-            firebase.auth().currentUser.updateProfile({
-              displayName: name,
+        .then(data => {
+          console.log('User ID :- ', data.user.uid);
+          firebase
+            .database()
+            .ref(`users/${data.user.uid}`)
+            .set({
+              Name: name,
+              totalRecommendations: 0,
+              totalFollowers: 0,
+              totalFollowing: 0,
             });
-            resolve(true);
-          }
+          firebase
+            .database()
+            .ref(`userData/${data.user.uid}`)
+            .set({
+              recommendations: true,
+              feed: true,
+              followers: 0,
+              following: 0,
+            });
+          console.warn('Done: create');
+          resolve(true);
         });
     });
   };
@@ -82,41 +98,6 @@ class Firebase {
           }
           resolve(false);
         });
-    });
-  };
-  authSignUpData = name => {
-    return firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        firebase
-          .database()
-          .ref(`users/${user.uid}`)
-          .set({
-            Name: name,
-            totalRecommendations: 0,
-            totalFollowers: 0,
-            totalFollowing: 0,
-          });
-        firebase
-          .database()
-          .ref(`userData/${user.uid}`)
-          .set({
-            recommendations: true,
-            feed: true,
-            followers: 0,
-            following: 0,
-          });
-      }
-    });
-  };
-  authLogInOrNot = name => {
-    return new Promise(resolve => {
-      firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      });
     });
   };
 }

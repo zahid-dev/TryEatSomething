@@ -28,19 +28,29 @@ class RestaurantDetails extends React.Component {
       });
   };
 
-  recommendPageNav(item) {
+  recommendPageNav(item, userID) {
     this.props.navigation.navigate('recommend', {
       id: item,
+      userID: userID,
     });
   }
   render() {
     const {navigation} = this.props;
     const id = navigation.getParam('id');
+    const userID = navigation.getParam('userID');
+    console.warn(userID);
     return (
       <View>
         <Text>{id}</Text>
         {/* {this.getLocationandName(id)} */}
-        <Button title="Recommend" onPress={() => this.recommendPageNav(id)} />
+        <Button
+          title="Recommend"
+          onPress={() => this.recommendPageNav(id, userID)}
+        />
+        <Button
+          title="Go back"
+          onPress={() => this.props.navigation.goBack()}
+        />
       </View>
     );
   }

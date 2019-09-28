@@ -53,7 +53,6 @@ export default class Register extends Component {
     Firebase.createFirebaseAccount(name, email, password).then(result => {
       if (result) this.props.change('login')();
       console.warn(result);
-      Firebase.authSignUpData(name);
       this.setState({isCreatingAccount: false});
     });
   };

@@ -90,9 +90,14 @@ class Restaurants extends React.Component {
   actionOnRow(item) {
     this.props.navigation.navigate('restaurantDetail', {
       id: item,
+      userID: this.props.userID,
     });
   }
+  usersPageNav() {
+    this.props.navigation.navigate('users');
+  }
   render() {
+    console.warn(this.props.userID);
     return (
       // eslint-disable-next-line react-native/no-inline-styles
       <ScrollView style={{flex: 1}}>
@@ -133,6 +138,11 @@ class Restaurants extends React.Component {
             <Button title="Execute" onPress={this.getRecommends} />
             <Button title="Log Out" onPress={() => firebase.auth().signOut()} />
           </CardSection>
+          <Button title="View Users" onPress={() => this.usersPageNav()} />
+          <Button
+            title="Go back"
+            onPress={() => this.props.navigation.goBack()}
+          />
           {this.plotRecommends(this.state.dataArray)}
         </Card>
       </ScrollView>

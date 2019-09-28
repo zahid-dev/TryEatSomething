@@ -15,14 +15,16 @@ import {createStackNavigator} from 'react-navigation-stack';
 import Restaurants from './components/Restaurants';
 import RestaurantDetails from './components/RestaurantDetails';
 import Recommend from './components/Recommend';
+import Users from './components/Users';
 
 class HomeScreen extends React.Component {
-  state = {isLogin: false};
+  state = {isLogin: false, uid: ''};
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.setState({isLogin: true});
+        this.setState({uid: user.uid});
         console.warn(user);
       } else {
         this.setState({isLogin: false});
@@ -30,6 +32,7 @@ class HomeScreen extends React.Component {
     });
   }
   render() {
+    console.warn(this.state.uid);
     if (!this.state.isLogin) {
       return (
         <ScrollView>
@@ -40,7 +43,7 @@ class HomeScreen extends React.Component {
     if (this.state.isLogin) {
       return (
         <ScrollView>
-          <Restaurants />
+          <Restaurants userID={this.state.uid} />
         </ScrollView>
       );
     }
@@ -52,6 +55,7 @@ const RootStack = createStackNavigator(
     Home: HomeScreen,
     restaurantDetail: RestaurantDetails,
     recommend: Recommend,
+    users: Users,
   },
   {
     initialRouteName: 'Home',
