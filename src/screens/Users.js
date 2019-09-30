@@ -8,8 +8,8 @@ import {
   TextInput,
   TouchableWithoutFeedback,
 } from 'react-native';
-import firebase from './FirebaseConfig';
-import {Card, CardSection} from './common';
+import firebase from '../components/FirebaseConfig';
+import {Card, CardSection} from '../components/common';
 import {withNavigation} from 'react-navigation';
 import axios from 'axios';
 
@@ -219,9 +219,7 @@ class Users extends React.Component {
   render() {
     const {navigation} = this.props;
     const userID = navigation.getParam('userID');
-    return (
-      <View>{/* {this.populateUsers(this.state.dataArray, userID)} */}</View>
-    );
+    return <View>{this.populateUsers(this.state.dataArray, userID)}}</View>;
   }
 }
 

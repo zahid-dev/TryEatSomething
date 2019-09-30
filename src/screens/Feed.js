@@ -8,19 +8,19 @@ import {
   TextInput,
   TouchableWithoutFeedback,
 } from 'react-native';
-import firebase from './FirebaseConfig';
-import {Card, CardSection} from './common';
+import firebase from '../components/FirebaseConfig';
+import {Card, CardSection} from '../components/common';
 import {withNavigation} from 'react-navigation';
 import axios from 'axios';
 
-class Plans extends React.Component {
+class Feed extends React.Component {
   render() {
     return (
       <View>
-        <Text>Plans!</Text>
+        <Text>Feed!</Text>
       </View>
     );
   }
 }
 
-export default withNavigation(Plans);
+export default withNavigation(Feed);

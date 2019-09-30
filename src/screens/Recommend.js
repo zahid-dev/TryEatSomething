@@ -2,7 +2,7 @@ import React, {Component, Platform} from 'react';
 import {Text, View, Button, TextInput, StyleSheet} from 'react-native';
 import {withNavigation} from 'react-navigation';
 import axios from 'axios';
-import firebase from './FirebaseConfig';
+import firebase from '../components/FirebaseConfig';
 
 class Recommend extends React.Component {
   constructor(props) {

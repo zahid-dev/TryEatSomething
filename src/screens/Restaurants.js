@@ -8,8 +8,8 @@ import {
   TextInput,
   TouchableWithoutFeedback,
 } from 'react-native';
-import firebase from './FirebaseConfig';
-import {Card, CardSection} from './common';
+import firebase from '../components/FirebaseConfig';
+import {Card, CardSection} from '../components/common';
 import {withNavigation} from 'react-navigation';
 import axios from 'axios';
 
@@ -27,8 +27,8 @@ class Restaurants extends React.Component {
     axios
       // eslint-disable-next-line no-undef
       .get(
-        // 'https://api.foursquare.com/v2/venues/' +
-        this.state.type +
+        'https://api.foursquare.com/v2/venues/' +
+          this.state.type +
           '?client_id=0ZRQFYTWFUAOKLRVJ3I3W1VKW0FUGDQL5RZ24N0O4JWMSPJG&client_secret=VWJPW1FDJHZZNZSMTQOOEJETX5TZBCH0G5R4WYWA1IGL1OLZ&v=20150729&near=' +
           this.state.location +
           '&query=' +
@@ -87,6 +87,10 @@ class Restaurants extends React.Component {
       />
     );
   }
+  logOut() {
+    firebase.auth().signOut();
+    this.props.navigation.navigate('Home');
+  }
   actionOnRow(item) {
     this.props.navigation.navigate('restaurantDetail', {
       id: item,
@@ -136,7 +140,7 @@ class Restaurants extends React.Component {
           </CardSection>
           <CardSection>
             <Button title="Execute" onPress={this.getRecommends} />
-            <Button title="Log Out" onPress={() => firebase.auth().signOut()} />
+            <Button title="Log Out" onPress={() => this.logOut()} />
           </CardSection>
           <Button title="View Users" onPress={() => this.usersPageNav()} />
           <Button

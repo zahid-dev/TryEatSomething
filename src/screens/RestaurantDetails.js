@@ -12,8 +12,8 @@ class RestaurantDetails extends React.Component {
     axios
       // eslint-disable-next-line no-undef
       .get(
-        // 'https://api.foursquare.com/v2/venues/' +
-        id +
+        'https://api.foursquare.com/v2/venues/' +
+          id +
           '?client_id=0ZRQFYTWFUAOKLRVJ3I3W1VKW0FUGDQL5RZ24N0O4JWMSPJG&client_secret=VWJPW1FDJHZZNZSMTQOOEJETX5TZBCH0G5R4WYWA1IGL1OLZ&v=20150729',
       )
       .then(res => {
