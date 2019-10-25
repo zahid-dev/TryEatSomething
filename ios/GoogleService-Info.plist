@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>642741661650-t21li3mls4ufk1la66a3t3b8jtb382s5.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.642741661650-t21li3mls4ufk1la66a3t3b8jtb382s5</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCEQBRu6arttsdJ9-NVBqCa7EUubw_UTrU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>642741661650</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.eatsnp.app</string>
+	<key>PROJECT_ID</key>
+	<string>eatsnp</string>
+	<key>STORAGE_BUCKET</key>
+	<string>eatsnp.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:642741661650:ios:973c72bd05fce2958a220b</string>
+	<key>DATABASE_URL</key>
+	<string>https://eatsnp.firebaseio.com</string>
+</dict>
+</plist>
