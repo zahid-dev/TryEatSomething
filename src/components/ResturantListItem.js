@@ -36,11 +36,15 @@ export default class RestaurantListItem extends React.Component<Props, State> {
 
     showDirectionsOnMap = () => {
         const item = this.props.item;
+        if(!item.location) {
+            alert("Location data not available for this restaurant");
+            return;
+        }
         const lat = item.location.lat;
         const lng = item.location.lng;
         const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
         const latLng = `${lat},${lng}`;
-        const label = 'EatSnp Directions';
+        const label = item.name;
         const url = Platform.select({
             ios: `${scheme}${label}@${latLng}`,
             android: `${scheme}${latLng}(${label})`

@@ -338,6 +338,7 @@ export class User {
               [feed.key]: feed.val(),
             });
         });
+        DeviceEventEmitter.emit('REFRESH_FEED', {})
       });
 
     firebase
@@ -419,6 +420,7 @@ export class User {
                     .remove();
                 }
               });
+              DeviceEventEmitter.emit('REFRESH_FEED', {})
             });
         });
       });

@@ -128,7 +128,7 @@ class Restaurants extends React.Component<Props, State> {
           long +
           '&section=' +
           query +
-          '&limit=3',
+          '&limit=10',
       )
       .then(res => {
         console.log("Response for explore endpoint: " + JSON.stringify(res, null, '\t'));

@@ -6,6 +6,7 @@ import {
   TextInput,
   StyleSheet,
   Image,
+  DeviceEventEmitter,
   TouchableOpacity,
 } from 'react-native';
 import {withNavigation} from 'react-navigation';
@@ -14,6 +15,7 @@ import firebase from 'react-native-firebase';
 import * as Values from '../res/Values';
 import * as DatabaseHelpers from '../firebase/DatabaseHelpers';
 import RatePanel from '../components/RatePanel';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview'
 
 class Recommend extends React.Component {
   static navigationOptions = {
@@ -40,6 +42,7 @@ class Recommend extends React.Component {
               restaurant
             ).then((status)=>{
               if(status){
+                DeviceEventEmitter.emit("REFRESH_FEED", {});
                 alert("Recommendation made successfully");
                 this.props.navigation.goBack();
               }
@@ -48,6 +51,7 @@ class Recommend extends React.Component {
             })
     }
     return (
+      <KeyboardAwareScrollView style={{flex:1}}>
       <View style={{backgroundColor: '#FFFFFF', flex: 1, padding:16}}>
         {/* <Text>id</Text> */}
         <View style={styles.feedCardHeaderStyle}>
@@ -99,6 +103,7 @@ class Recommend extends React.Component {
           <Text style={styles.recommendButtonText}>Make Recommendation</Text>
         </TouchableOpacity>
       </View>
+      </KeyboardAwareScrollView>
     );
   }
 }

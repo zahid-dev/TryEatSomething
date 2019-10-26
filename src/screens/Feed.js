@@ -10,6 +10,7 @@ import {
   Image,
   ActivityIndicator,
   TouchableWithoutFeedback,
+  DeviceEventEmitter,
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import {Card, CardSection} from '../components/common';
@@ -21,6 +22,7 @@ import ResturantListItem from '../components/ResturantListItem';
 
 import * as DatabaseHelpers from '../firebase/DatabaseHelpers';
 import { switchStatement } from '@babel/types';
+
 
 class Feed extends React.Component {
 
@@ -47,7 +49,13 @@ class Feed extends React.Component {
 
   componentDidMount() {
     this.getGlobalFeed();
-   
+    DeviceEventEmitter.addListener('REFRESH_FEED', ()=>{
+      this.getGlobalFeed();
+    })
+  }
+
+  componentWillUnmount(){
+    DeviceEventEmitter.removeListener('REFRESH_FEED');
   }
 
   getGlobalFeed(){

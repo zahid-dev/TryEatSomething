@@ -23,7 +23,6 @@ import ProfileHeader from '../components/ProfileHeader';
 
 class Profile extends React.Component {
 
-
   static navigationOptions = ({navigation}) => {
     const logOut = () => {
       firebase.auth().signOut();
