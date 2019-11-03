@@ -26,7 +26,7 @@ class Recommend extends React.Component {
     super(props);
   }
 
-  state = {text: '', rating: '', waittime: 15};
+  state = {text: '', rating: '', waittime: 0};
 
   render() {
     const {navigation} = this.props;
@@ -85,7 +85,7 @@ class Recommend extends React.Component {
             <RatePanel onStarPress={(rating)=>{this.setState({rating})}} />
           </View>
 
-          <View style={styles.container2Style}>
+          {/* <View style={styles.container2Style}>
             <Text style={styles.labelStyle}>Wait Time (Minutes) </Text>
             <TextInput
               style={{fontSize:20}}
@@ -95,7 +95,7 @@ class Recommend extends React.Component {
               value={String(this.state.waittime)}
               onChangeText={waittime => this.setState({waittime})}
             />
-          </View>
+          </View> */}
         </View>
         <TouchableOpacity
           style={styles.recommendButton}
@@ -109,7 +109,7 @@ class Recommend extends React.Component {
 }
 const styles = StyleSheet.create({
   ratingContainerStyle: {
-    height: 150,
+   
     borderRadius:16,
     backgroundColor:Values.Colors.COLOR_LIGHT_GRAY,
     padding:16,
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   container1Style: {
     flexDirection: 'column',
     position: 'relative',
-    marginTop: 5,
+
     paddingLeft: 5,
   },
   container2Style: {

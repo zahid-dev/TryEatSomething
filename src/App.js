@@ -6,6 +6,7 @@ import {
   Text,
   View,
   Button,
+  StatusBar,
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
@@ -55,6 +56,7 @@ class HomeScreen extends React.Component {
     console.warn(this.state.uid);
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor="white" barStyle="dark-content" />
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );

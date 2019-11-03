@@ -32,7 +32,7 @@ class RestaurantDetails extends React.Component {
     data3Array: [],
     menuArray: [],
     recommendsArray: [],
-    restaurant:""
+    restaurant:"",
   };
 
   componentDidMount() {
@@ -190,6 +190,11 @@ class RestaurantDetails extends React.Component {
       });
   }
 
+  onRecommendPress = () => {
+    const restaurant = this.state.restaurant;
+    this.props.navigation.navigate('Recommend', {restaurant})
+  }
+
 
   showDirectionsOnMap = () => {
     const item = this.state.restaurant;
@@ -240,7 +245,7 @@ class RestaurantDetails extends React.Component {
           <Button 
             title={'Recommend'} 
             color={Values.Colors.COLOR_BLACK} 
-            onPress={this.props.onRecommendPress} />
+            onPress={this.onRecommendPress} />
     
           <View style={{width:StyleSheet.hairlineWidth, height:'100%', backgroundColor:Values.Colors.COLOR_MID_GRAY}}/>
     
@@ -316,7 +321,7 @@ class RestaurantDetails extends React.Component {
         <RestaurantMenu menu={this.state.menu} />
     
   
-        <Text style={{fontSize: 16, marginTop: 16, marginLeft:16, fontWeight:'600', color:Values.Colors.COLOR_GRAY}}>RECOMMENDATIONS</Text>
+        <Text style={{fontSize: 16, marginTop: 16, marginLeft:16, fontWeight:'600', color:Values.Colors.COLOR_GRAY}}>WHAT PEOPLE ARE SAYING</Text>
       
           {this.plotRecommends(this.state.data2Array)}
     

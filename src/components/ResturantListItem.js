@@ -115,10 +115,10 @@ export default class RestaurantListItem extends React.Component<Props, State> {
                     </View>
                 }
                 {
-                    item.waittime &&
-                    <View style={styles.waitTimeContainer}>
-                        <Text style={{color:Values.Colors.COLOR_GRAY, fontWeight:'600'}}>{waitTimeText}</Text> 
-                    </View>
+                    // item.waittime &&
+                    // <View style={styles.waitTimeContainer}>
+                    //     <Text style={{color:Values.Colors.COLOR_GRAY, fontWeight:'600'}}>{waitTimeText}</Text> 
+                    // </View>
                 }
             </View>
         )

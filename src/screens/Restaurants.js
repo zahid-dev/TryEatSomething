@@ -46,7 +46,7 @@ class Restaurants extends React.Component<Props, State> {
       return (
         <View style={{flexDirection:'row', borderRadius:12, backgroundColor:Values.Colors.COLOR_LIGHT_GRAY}}>
           <TextInput 
-            style={{flex:1, paddingLeft:16, paddingRight:16}} 
+            style={{flex:1, paddingLeft:16, paddingRight:16, color:Values.Colors.COLOR_BLACK}} 
             placeholder="Search Restaurants"
             
             onChangeText={(text)=>query = text}

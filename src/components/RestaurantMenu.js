@@ -11,15 +11,40 @@ import {
     StyleSheet,
 } from 'react-native';
 import * as Values from '../res/Values';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import {Button} from 'react-native-elements'
 
-export default class RestaurantMenu extends React.Component<{}> {
+type Props = {
 
+}
+
+type State = {
+    showMenuMap:Map<string, boolean>
+}
+
+
+export default class RestaurantMenu extends React.Component<Props, State> {
+
+
+    state = {
+        showMenuMap:new Map<string, boolean>()
+    }
 
     _renderNoMenu(){
         return (
         <View style={styles.container}>
             <Text style={styles.noMenu}>Restaurant has not shared menu</Text>
         </View>
+        )
+    }
+
+    _renderShowButton(){
+        return (
+            <TouchableOpacity onPress={()=>{this.setState({showMenu:true})}}>
+                <View style={styles.container}>
+                    <Text style={styles.noMenu}>Tap To Show Menu</Text>
+                </View>
+            </TouchableOpacity>
         )
     }
 
@@ -40,22 +65,37 @@ export default class RestaurantMenu extends React.Component<{}> {
         )
     }
 
-    _renderMenuItem = (item)=> {
+    _renderMenuItem = (item, index)=> {
         var entriesView = null;
+        const showMenu = this.state.showMenuMap.get(item.menuId) || false
         const entries = item.entries;
+        const onPress = () => {
+           this.setState((state)=>{
+                state.showMenuMap.set(item.menuId, !showMenu)
+                return state;
+           })
+        }
         if(entries && entries.count){
             entriesView = entries.items.map(this._renderEntryItem)
         }
         return (
             <View key={item.menuId} style={{marginBottom:16}} >
-                <Text style={styles.title}>{item.name}</Text>
-                {entriesView}
+                <Button 
+                    buttonStyle={styles.titleWrapper}
+                    titleStyle={styles.title} 
+                    title={item.name} 
+                    onPress={onPress}
+                    type="outline"
+            
+                />
+                {showMenu && entriesView}
             </View>
         )
     }
 
     render(){
         const menu = this.props.menu;
+        const showMenu = this.state.showMenu;
         
         if(!menu) return this._renderNoMenu();
 
@@ -85,7 +125,15 @@ const styles = StyleSheet.create({
     title:{
         fontSize:18,
         fontWeight:'600',
-        color:Values.Colors.COLOR_BLACK
+        color:Values.Colors.COLOR_BLACK,
+        textAlign:"left",
+    },
+    titleWrapper:{
+        borderColor:Values.Colors.COLOR_GRAY,
+        borderTopWidth:0,
+        borderRightWidth:0,
+        borderLeftWidth:0,
+        justifyContent:'flex-start'
     },
     noMenu:{
         fontSize:18,
