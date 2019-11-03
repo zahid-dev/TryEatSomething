@@ -98,21 +98,24 @@ export default class RestaurantListItem extends React.Component<Props, State> {
         
         return (
             <View>
+                
                 <Image
                     style={styles.imageRestaurant}
                     source={imgSource}
                     resizeMode='cover'
                     />
         
-                {item.rating &&
+                {
+                    item.rating &&
                     <View style={styles.ratingContainer}>
                         <RatingStars rating={item.rating||4} size={16} />
                     </View>
                 }
-                {item.waittime &&
-                <View style={styles.waitTimeContainer}>
-                    <Text style={{color:Values.Colors.COLOR_GRAY, fontWeight:'600'}}>{waitTimeText}</Text>
-                </View>
+                {
+                    item.waittime &&
+                    <View style={styles.waitTimeContainer}>
+                        <Text style={{color:Values.Colors.COLOR_GRAY, fontWeight:'600'}}>{waitTimeText}</Text> 
+                    </View>
                 }
             </View>
         )
@@ -137,7 +140,7 @@ export default class RestaurantListItem extends React.Component<Props, State> {
                     
                     <Text style={styles.title}>{restaurant.name}</Text>
     
-                    <Text style={styles.subTitle} multiline={false} numberOfLines={recommendationMode?0:1}>
+                    <Text style={styles.subTitle} numberOfLines={recommendationMode?0:1}>
                     {subText}
                     </Text>
                     {mode === MODE_RECOMMENDATION &&
@@ -186,12 +189,18 @@ export default class RestaurantListItem extends React.Component<Props, State> {
             <TouchableOpacity onPress={onContainerPress}>
                 <View style={styles.container}>
                 
-                {this._renderItemHeader()}
+                {
+                    this._renderItemHeader()
+                }
         
                 <View style={styles.bottomContentContainer}>
-                   {this._renderContent()}
+                   {
+                       this._renderContent()
+                   }
                    <View style={{height:StyleSheet.hairlineWidth, width:'100%', backgroundColor:Values.Colors.COLOR_MID_GRAY}}/>
-                   {this._renderActionPanel()}
+                   {
+                       this._renderActionPanel()
+                   }
                 </View>
 
                 </View>

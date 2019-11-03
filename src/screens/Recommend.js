@@ -26,7 +26,7 @@ class Recommend extends React.Component {
     super(props);
   }
 
-  state = {text: '', rating: '', waittime: ''};
+  state = {text: '', rating: '', waittime: 15};
 
   render() {
     const {navigation} = this.props;
@@ -86,7 +86,7 @@ class Recommend extends React.Component {
           </View>
 
           <View style={styles.container2Style}>
-            <Text style={styles.labelStyle}>Wait Time </Text>
+            <Text style={styles.labelStyle}>Wait Time (Minutes) </Text>
             <TextInput
               style={{fontSize:20}}
               placeholder="Minutes"

@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {
   Text,
   View,
-  Button,
   FlatList,
   ScrollView,
   TextInput,
@@ -19,6 +18,9 @@ import axios from 'axios';
 import * as Values from '../res/Values';
 import RatingStars from '../components/RatingStars';
 import ResturantListItem from '../components/ResturantListItem';
+import {Button} from 'react-native-elements';
+import {IonIcons} from 'react-native-vector-icons';
+
 
 type DataItem = {
   id:string,
@@ -36,8 +38,31 @@ type State = {
 class Restaurants extends React.Component<Props, State> {
 
   static navigationOptions = ({navigation}) => {
+    var query = "";
+    const updateSearch = navigation.getParam('updateSearch', ()=>{})
+    const onFunnelPress = navigation.getParam('onFunnelPress', ()=>{})
+
+    const _renderSearchBar = () => {
+      return (
+        <View style={{flexDirection:'row', borderRadius:12, backgroundColor:Values.Colors.COLOR_LIGHT_GRAY}}>
+          <TextInput 
+            style={{flex:1, paddingLeft:16, paddingRight:16}} 
+            placeholder="Search Restaurants"
+            
+            onChangeText={(text)=>query = text}
+          />
+          <Button 
+            type={"clear"}
+            titleStyle={{color:Values.Colors.COLOR_GRAY, fontSize:14}}
+            onPress={()=>updateSearch(query)}
+            icon={{ name:'search', size: 18, color:Values.Colors.COLOR_GRAY }}
+          />
+        </View>
+      )
+    }
     return ({
-      headerTitle:"Resturants"
+      headerTitle:_renderSearchBar(),
+      headerRight:<Button icon={{ name:'ios-funnel', size: 24, color:Values.Colors.COLOR_GRAY, type:"ionicon"}} onPress={onFunnelPress} type={"clear"}/>
     })
   }
 
@@ -49,6 +74,8 @@ class Restaurants extends React.Component<Props, State> {
     latitude: [],
     longitude: [],
     uid: '',
+    showFilter:false,
+    category:'default',
   };
 
   componentDidMount() {
@@ -59,6 +86,16 @@ class Restaurants extends React.Component<Props, State> {
     }else{
       this.requestLocationPermission();
     }
+
+    this.props.navigation.setParams({
+      updateSearch:(query)=>{
+        console.log("Searching for: " + query)
+        this.getVenues({query})
+      },
+      onFunnelPress:()=>{
+        this.setState(state=>{state.showFilter = !state.showFilter; return state})
+      }
+    })
   }
 
   async requestLocationPermission() {
@@ -94,11 +131,7 @@ class Restaurants extends React.Component<Props, State> {
         console.warn(position.coords.latitude, position.coords.longitude);
         this.setState({latitude: position.coords.latitude});
         this.setState({longitude: position.coords.longitude});
-        this.getVenues(
-          'food',
-          position.coords.latitude,
-          position.coords.longitude,
-        );
+        this.getVenues();
       },
       error => {
         // See error code charts below.
@@ -109,27 +142,40 @@ class Restaurants extends React.Component<Props, State> {
   }
 
 
-  getVenues(query, lat, long) {
-    if (query === 'food') {
-      this.setState({Itenerary: 'Food'});
+  getCategoryId(category:string){
+    switch(category){
+      case 'food': return "4d4b7105d754a06374d81259";
+      case 'drinks': return "4bf58dd8d48988d112941735";
+      case 'coffee': return "4bf58dd8d48988d1e0931735";
+      default: return "4d4b7105d754a06374d81259"
     }
-    if (query === 'drinks') {
-      this.setState({Itenerary: 'Drinks'});
+  }
+
+  getVenues(params = {}) {
+
+    const category = params.category || this.state.category;
+    const query = params.query || this.state.query;
+    const lat = params.latitude || this.state.latitude;
+    const long = params.longitude || this.state.longitude;
+
+    var url = 'https://api.foursquare.com/v2/venues/explore?'
+    url += 'client_id=SQCAM5YS25I5GT23G52WXHGWS5FE4C300IUBNEJWUD22GG2J'
+    url += '&client_secret=IZMZAFTA4PWEA0JVMWMEZZBJBAT3MJ5HBLK5JDFW5N55M1TN'
+    url += '&v=20150729'
+    url += `&ll=${lat},${long}`;
+    url += `&limit=${Values.Numbers.FOURSQUARE_RESULT_LIMIT}`;
+
+    url += `&categoryId=${this.getCategoryId(category)}`;
+
+    if(query){
+      url += `&query=${query}`
     }
-    if (query === 'coffee') {
-      this.setState({Itenerary: 'Coffee'});
-    }
-    this.setState({dataArray: []});
+
+
+    params.dataArray = [];
+    this.setState(params);
     axios
-      .get(
-        'https://api.foursquare.com/v2/venues/explore?client_id=SQCAM5YS25I5GT23G52WXHGWS5FE4C300IUBNEJWUD22GG2J&client_secret=IZMZAFTA4PWEA0JVMWMEZZBJBAT3MJ5HBLK5JDFW5N55M1TN&v=20150729&ll=' +
-          lat +
-          ',' +
-          long +
-          '&section=' +
-          query +
-          '&limit=10',
-      )
+      .get(url)
       .then(res => {
         console.log("Response for explore endpoint: " + JSON.stringify(res, null, '\t'));
         const data = [];
@@ -238,14 +284,10 @@ class Restaurants extends React.Component<Props, State> {
   }
 
   _renderListHeader = () => {
-    const itenerary = this.state.Itenerary;
-    const getVenues = (category:string) => {
-      this.getVenues(
-        category,
-        this.state.latitude,
-        this.state.longitude,
-      )
-    }
+
+    if(!this.state.showFilter) return <View style={{height:16}} />;
+
+    const category = this.state.category;
 
     const _renderHeaderItem = (label, isSelected, onPress) => {
       const textStyle = isSelected? styles.buttontextStyle:styles.buttontextStyleSelected
@@ -258,9 +300,9 @@ class Restaurants extends React.Component<Props, State> {
 
     return (
       <View style={styles.RestaurantCardTopBarButtonContainer}>
-        {_renderHeaderItem('FOOD', itenerary === 'Food', ()=>{getVenues('food')} )}
-        {_renderHeaderItem('DRINKS', itenerary === 'Drinks', ()=>{getVenues('drinks')} )}
-        {_renderHeaderItem('COFFEE', itenerary === 'Coffee', ()=>{getVenues('coffee')} )}
+        {_renderHeaderItem('FOOD', category === 'food', ()=>{ this.getVenues({category:'food'})} )}
+        {_renderHeaderItem('DRINKS', category === 'drinks', ()=>{ this.getVenues({category:'drinks'})} )}
+        {_renderHeaderItem('COFFEE', category === 'coffee', ()=>{ this.getVenues({category:'coffee'})} )}
       </View>
     )
   }

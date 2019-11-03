@@ -32,7 +32,7 @@ class Profile extends React.Component {
     currentUid = firebase.auth().currentUser.uid
     const uid = navigation.getParam('uid', currentUid);
     
-    headerRight = uid === currentUid? <Button title="Logout" onPress={logOut}/> : null
+    headerRight = uid === currentUid? <Button title="Logout" onPress={logOut} color={Values.Colors.COLOR_PRIMARY}/> : null
 
     return ({
       headerTitle:"Profile",

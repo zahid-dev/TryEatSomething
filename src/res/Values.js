@@ -38,3 +38,7 @@ export class Colors {
   static get COLOR_LIGHT_GRAY(){return '#f2f2f2'}
   static get COLOR_WHITE(){return 'white'}
 }
+
+export class Numbers {
+  static get FOURSQUARE_RESULT_LIMIT(){return __DEV__?3:10}
+}
