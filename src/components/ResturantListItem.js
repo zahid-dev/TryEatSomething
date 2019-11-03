@@ -25,7 +25,8 @@ const MODE_RECOMMENDATION = 'recommendation'
 
 type Props = {
     item:any,
-    mode:MODE_RECOMMENDATION|MODE_RESTAURANT
+    mode:MODE_RECOMMENDATION|MODE_RESTAURANT,
+    onRestaurantPress:(string)=>void
 }
 
 type State = {
@@ -36,15 +37,17 @@ export default class RestaurantListItem extends React.Component<Props, State> {
 
     showDirectionsOnMap = () => {
         const item = this.props.item;
-        if(!item.location) {
+
+        const restaurant = item.restaurant?item.restaurant:item;
+        if(!restaurant.location) {
             alert("Location data not available for this restaurant");
             return;
         }
-        const lat = item.location.lat;
-        const lng = item.location.lng;
+        const lat = restaurant.location.lat;
+        const lng = restaurant.location.lng;
         const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
         const latLng = `${lat},${lng}`;
-        const label = item.name;
+        const label = restaurant.name;
         const url = Platform.select({
             ios: `${scheme}${label}@${latLng}`,
             android: `${scheme}${latLng}(${label})`
@@ -155,6 +158,7 @@ export default class RestaurantListItem extends React.Component<Props, State> {
         const item = this.props.item;
         const mode = this.props.mode;
         const recommendationMode = mode === MODE_RECOMMENDATION;
+        const restaurantKey = recommendationMode? item.restaurantKey:item.id
         return (
             <View style={styles.actionPanel}>
                 {!recommendationMode &&
@@ -169,7 +173,7 @@ export default class RestaurantListItem extends React.Component<Props, State> {
                 <Button 
                     title={'Details'} 
                     color={Values.Colors.COLOR_BLACK}  
-                    onPress={()=>{this.props.onRestaurantPress(item.restaurantKey)}} />
+                    onPress={()=>{this.props.onRestaurantPress(restaurantKey)}} />
                 <View style={{width:StyleSheet.hairlineWidth, height:'100%', backgroundColor:Values.Colors.COLOR_MID_GRAY}}/>
                 <Button 
                     title={'Directions'} 

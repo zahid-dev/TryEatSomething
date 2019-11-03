@@ -1,4 +1,4 @@
-import React, {Component, Platform} from 'react';
+import React, {Component} from 'react';
 import {
   Text,
   View,
@@ -8,12 +8,15 @@ import {
   FlatList,
   StyleSheet,
   ScrollView,
+  Platform,
+  Linking,
 } from 'react-native';
 import {withNavigation} from 'react-navigation';
 import firebase from 'react-native-firebase';
 import axios from 'axios';
 import * as Values from '../res/Values';
 import RestaurantMenu from '../components/RestaurantMenu';
+import { matcherErrorMessage } from 'jest-matcher-utils';
 
 class RestaurantDetails extends React.Component {
 
@@ -108,8 +111,14 @@ class RestaurantDetails extends React.Component {
         data.push(obj);
         this.setState({restaurant: obj});
         //console.warn('dat', this.state.dataArray);
-      });
+      })
+      .catch((err)=>{
+        console.warn("Failed to fetch resturant details: "+ JSON.stringify(err));
+        alert("Failed to fetch resturant details: "+ err.message);
+      })
   }
+
+
   async getRecommends(recommendids) {
     console.warn('idsr', recommendids);
     const array = [];
@@ -165,6 +174,7 @@ class RestaurantDetails extends React.Component {
     });
   }
 
+
   getMenu(restaurantKey) {
     axios
       .get(
@@ -181,8 +191,27 @@ class RestaurantDetails extends React.Component {
   }
 
 
+  showDirectionsOnMap = () => {
+    const item = this.state.restaurant;
+    if(!item.location) {
+        alert("Location data not available for this restaurant");
+        return;
+    }
+    const lat = item.location.lat;
+    const lng = item.location.lng;
+    const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
+    const latLng = `${lat},${lng}`;
+    const label = item.name;
+    const url = Platform.select({
+        ios: `${scheme}${label}@${latLng}`,
+        android: `${scheme}${latLng}(${label})`
+    });
+
+
+    Linking.openURL(url); 
+  }
+
   _renderRestaurantTextualContent(restaurant){
-      
         var categoryText = "Food";
         try{
            categoryText = restaurant.categories[0].name;
@@ -204,9 +233,8 @@ class RestaurantDetails extends React.Component {
         )
   }
 
+
   _renderActionPanel(item){
-
-
     return (
         <View style={styles.actionPanel}>
           <Button 
@@ -224,6 +252,7 @@ class RestaurantDetails extends React.Component {
         </View>
     )
 }
+
 
   plotRestaurantData(item) {
     return (
@@ -261,6 +290,7 @@ class RestaurantDetails extends React.Component {
       />
     );
   }
+
   recommendPageNav(item, userID) {
     this.props.navigation.navigate('Recommend', {
       id: item,
