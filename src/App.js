@@ -1,3 +1,7 @@
+/*
+@flow
+@format
+*/
 import React, {Component} from 'react';
 import {
   StyleSheet,
@@ -25,6 +29,7 @@ import Restaurants from './screens/Restaurants';
 import RestaurantDetails from './screens/RestaurantDetails';
 import Recommend from './screens/Recommend';
 import Plans from './screens/Plans';
+import PlanDetailsScreen from './screens/PlanDetailsScreen';
 import Profile from './screens/Profile';
 import * as Values from './res/Values';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -97,6 +102,11 @@ const FeedNavigator = createStackNavigator(
   },
 );
 
+const PlansNavigator = createStackNavigator({
+  Plans:{screen:Plans},
+  PlanDetails:{screen:PlanDetailsScreen},
+})
+
 const ProfileNavigator = createStackNavigator(
   {
     ProfileTab: {screen:Profile},
@@ -108,8 +118,8 @@ const TabNavigator = createBottomTabNavigator(
   {
     Home: {screen: FeedNavigator},
     Restaurants: {screen: RestaurantNavigator},
+    Plans: {screen: PlansNavigator},
     Profile: {screen: ProfileNavigator},
-    //Plans: {screen: Plans},
   },
   {
     initialRouteName: 'Home',

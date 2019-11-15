@@ -5,22 +5,106 @@ import {
   Button,
   FlatList,
   ScrollView,
+  StyleSheet,
   TextInput,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import {Card, CardSection} from '../components/common';
 import {withNavigation} from 'react-navigation';
 import axios from 'axios';
+import * as DatabaseHelpers from '../firebase/DatabaseHelpers';
+import * as Contract from '../firebase/Contract'
+import PlanListItem from '../components/PlanListItem';
+
+type State = {
+  plans:Array<Contract.Plan>
+}
 
 class Plans extends React.Component {
-  render() {
+
+  static navigationOptions = {
+    title:"Plans"
+  }
+
+  state = {
+    isLoading:false,
+    plans:[]
+  }
+
+  componentDidMount(){
+    this.fetchPlans();
+  }
+
+
+  fetchPlans(){
+    this.setState({isLoading:true})
+    DatabaseHelpers.UserData.fetchUserPlans()
+      .then((plans) => {
+        const state = {isLoading:false}
+        if(plans){
+          state.plans = plans
+        }else{
+          state.plans = []
+        }
+
+        this.setState(state)
+      })
+      .catch((error:Error)=>{
+        this.setState({plans:[], isLoading:false})
+        console.warn("Failed to fetch plans: " + JSON.stringify(error));
+        alert("Failed to fetch plans: " + error.message);
+      })
+  }
+
+  _renderActivityIndicator(){
     return (
-      <View>
-        <Text>Plans!</Text>
+      <View style={styles.loadingPlaceholder}>
+        <ActivityIndicator animating={true} size='large' />
+      </View>
+    )
+  }
+
+  _renderItem = ({item, index}) => {
+    return (
+      <PlanListItem item={item} />
+    )
+  }
+
+  render() {
+    const {isLoading, plans} = this.state;
+    if(isLoading){
+      return this._renderActivityIndicator();
+    }
+    return (
+      <View style={styles.container}>
+        {
+          plans.length?
+            <FlatList 
+              data={this.state.plans}
+              renderItem={this._renderItem}
+            />
+            :
+            <Text>No Plans Found</Text>
+        }
+     
       </View>
     );
   }
 }
 
+
 export default withNavigation(Plans);
+
+
+const styles = StyleSheet.create({
+  container:{
+    flex:1
+  },
+  loadingPlaceholder:{
+    flex:1,
+    justifyContent:'center',
+    marginTop:56
+  }
+})

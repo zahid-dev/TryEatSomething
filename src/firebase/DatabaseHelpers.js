@@ -4,6 +4,7 @@
 */
 
 import firebase from 'react-native-firebase'
+import * as Contract from '../firebase/Contract'
 
 export class Recommendation {
 
@@ -480,6 +481,62 @@ export class UserData {
 
     return Recommendation.getRecommendationsUsingKeySnaps(feedSnapshot);
   }
+
+  static async fetchUserPlans(){
+    try {
+      //fetch plan keys for uesr
+      const uid = firebase.auth().currentUser.uid;
+      const snapshot = firebase.database().ref(Contract.UserData.PATH_PLANS)
+      .orderByValue()
+      .once('value', (snapshot)=>{
+        return snapshot
+      },(error)=>{
+        console.warn("Failed to fetch plans: " + JSON.stringify(error))
+      });
+
+      //iterate and fetch plans
+      const promises = []
+      snapshot.forEach(childSnap => {
+        const planKey = childSnap.key;
+        promises.push(Plan.getPlan(planKey))
+      })
+
+      const plans = Promise.all(promises);
+      return plans;
+
+    }
+    catch(error){
+      console.warn("Failed to get plans list: " + JSON.stringify(error))
+    }
+  }
+}
+
+
+export class Plan {
+
+  static getPlan(planKey:string):Promise<Contract.Plan>{
+    return new Promise((resolve, reject)=>{
+      console.log("Fetching plan for key: " + planKey)
+      firebase.database().ref(Contract.Plan.PATH_BASE)
+      .child(planKey)
+      .once(
+        'once',
+        (snapshot)=>{
+          const plan = snapshot.val();
+          if(plan){
+            resolve(plan)
+          }else{
+            reject(new Error("No plan returned in snapshot"))
+          }
+        },
+        (err)=>{
+          console.warn("Failed to get plan: " + JSON.stringify(err))
+          reject(err)
+        }
+      )
+    })
+  }
+
 }
 
 
