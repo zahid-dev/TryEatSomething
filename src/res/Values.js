@@ -28,6 +28,9 @@ export class Images {
   static get IC_STAR(){
     return require('./img/ic_star.png')
   }
+  static get IC_PLAN(){
+    return require('./img/ic_plan.png')
+  }
 }
 
 export class Colors {
@@ -41,4 +44,9 @@ export class Colors {
 
 export class Numbers {
   static get FOURSQUARE_RESULT_LIMIT(){return __DEV__?3:10}
+}
+
+export class Screens {
+  static get SCREEN_MAKE_PLAN(){return "MakePlan"}
+  static get SCREEN_USER_SEARCH(){return 'UserSearch'}
 }

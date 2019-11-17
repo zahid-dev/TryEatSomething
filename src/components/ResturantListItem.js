@@ -26,7 +26,8 @@ const MODE_RECOMMENDATION = 'recommendation'
 type Props = {
     item:any,
     mode:MODE_RECOMMENDATION|MODE_RESTAURANT,
-    onRestaurantPress:(string)=>void
+    onRestaurantPress:(string)=>void,
+    onPlanPress:()=>void
 }
 
 type State = {
@@ -171,9 +172,9 @@ export default class RestaurantListItem extends React.Component<Props, State> {
                     <View style={{width:StyleSheet.hairlineWidth, height:'100%', backgroundColor:Values.Colors.COLOR_MID_GRAY}}/>
                 }
                 <Button 
-                    title={'Details'} 
+                    title={'Plan'} 
                     color={Values.Colors.COLOR_BLACK}  
-                    onPress={()=>{this.props.onRestaurantPress(restaurantKey)}} />
+                    onPress={this.props.onPlanPress} />
                 <View style={{width:StyleSheet.hairlineWidth, height:'100%', backgroundColor:Values.Colors.COLOR_MID_GRAY}}/>
                 <Button 
                     title={'Directions'} 

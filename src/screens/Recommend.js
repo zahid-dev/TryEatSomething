@@ -16,6 +16,7 @@ import * as Values from '../res/Values';
 import * as DatabaseHelpers from '../firebase/DatabaseHelpers';
 import RatePanel from '../components/RatePanel';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview'
+import RestaurantHeader from '../components/RestaurantHeader';
 
 class Recommend extends React.Component {
   static navigationOptions = {
@@ -52,64 +53,60 @@ class Recommend extends React.Component {
     }
     return (
       <KeyboardAwareScrollView style={{flex:1}}>
-      <View style={{backgroundColor: '#FFFFFF', flex: 1, padding:16}}>
-        {/* <Text>id</Text> */}
-        <View style={styles.feedCardHeaderStyle}>
-          <Image
-            style={styles.imgFeedHeaderStyle}
-            source={Values.Images.RESTAURANTS}
-          />
-          <View style={styles.textviewFeedHeaderStyle}>
-            <Text style={styles.text1FeedHeaderStyle}>{restaurant.name}</Text>
-            <Text style={styles.text2FeedHeaderStyle}>{restaurant.address}</Text>
-          </View>
-        </View>
-        <View style={styles.textAreaContainer}>
-        
-          <TextInput
-            style={styles.textArea}
-            underlineColorAndroid="transparent"
-            placeholder="Describe your experience"
-            placeholderTextColor="grey"
-            numberOfLines={3}
-            maxLength={90}
-            multiline={true}
-            onChangeText={text => this.setState({text})}
-            value={this.state.text}
-          />
-        </View>
-        <View style={styles.ratingContainerStyle}>
+        <View style={styles.container}>
+          <RestaurantHeader restaurant={restaurant} />
 
-          <View style={styles.container1Style}>
-            <Text style={styles.labelStyle}>Rate Resturant</Text>
-            <RatePanel onStarPress={(rating)=>{this.setState({rating})}} />
-          </View>
-
-          {/* <View style={styles.container2Style}>
-            <Text style={styles.labelStyle}>Wait Time (Minutes) </Text>
+          <View style={styles.textAreaContainer}>
             <TextInput
-              style={{fontSize:20}}
-              placeholder="Minutes"
-              autoCorrect={false}
-              keyboardType={'numeric'}
-              value={String(this.state.waittime)}
-              onChangeText={waittime => this.setState({waittime})}
+              style={styles.textArea}
+              underlineColorAndroid="transparent"
+              placeholder="Describe your experience"
+              placeholderTextColor="grey"
+              numberOfLines={3}
+              maxLength={90}
+              multiline={true}
+              onChangeText={text => this.setState({text})}
+              value={this.state.text}
             />
-          </View> */}
+          </View>
+
+          <View style={styles.ratingContainerStyle}>
+
+            <View style={styles.container1Style}>
+              <Text style={styles.labelStyle}>Rate Resturant</Text>
+              <RatePanel onStarPress={(rating)=>{this.setState({rating})}} />
+            </View>
+
+            {/* <View style={styles.container2Style}>
+              <Text style={styles.labelStyle}>Wait Time (Minutes) </Text>
+              <TextInput
+                style={{fontSize:20}}
+                placeholder="Minutes"
+                autoCorrect={false}
+                keyboardType={'numeric'}
+                value={String(this.state.waittime)}
+                onChangeText={waittime => this.setState({waittime})}
+              />
+            </View> */}
+          </View>
+          
+          <TouchableOpacity
+            style={styles.recommendButton}
+            onPress={makeRecommendation}>
+            <Text style={styles.recommendButtonText}>Make Recommendation</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.recommendButton}
-          onPress={makeRecommendation}>
-          <Text style={styles.recommendButtonText}>Make Recommendation</Text>
-        </TouchableOpacity>
-      </View>
       </KeyboardAwareScrollView>
     );
   }
 }
 const styles = StyleSheet.create({
+  container:{
+    backgroundColor: '#FFFFFF',
+    flex: 1,
+    padding:16
+  },
   ratingContainerStyle: {
-   
     borderRadius:16,
     backgroundColor:Values.Colors.COLOR_LIGHT_GRAY,
     padding:16,

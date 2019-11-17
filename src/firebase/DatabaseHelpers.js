@@ -294,6 +294,7 @@ export class Recommendation {
 
 
 export class User {
+
   static async getUser(uid){
     let userData = await firebase
     .database()
@@ -304,6 +305,13 @@ export class User {
     });
     const user = userData.val();
     return user;
+  }
+
+  static fetchWithQuery(query:string):Promise<Array<Contract.User>>{
+    return new Promise((resolve, reject)=>{
+      //TODO: update method with proper query
+      resolve([])
+    })
   }
 
 
@@ -470,6 +478,13 @@ export class User {
 
 export class UserData {
 
+
+  static fetchFollowers():Promise<Array<Contract.User>>{
+    return new Promise((resolve, reject)=>{
+      resolve([])
+    });
+  }
+
   static async getRecommendations(uid){
     let feedSnapshot = await firebase
       .database()
@@ -534,6 +549,23 @@ export class Plan {
           reject(err)
         }
       )
+    })
+  }
+
+
+  static createPlan(plan:Contract.Plan):Promise<boolean>{
+    return new Promise((resolve, reject)=>{
+      //set plan in fireabse
+      const ref = firebase.database().ref(Contract.Plan.PATH_BASE).push()
+      const planKey = ref.key;
+
+      ref.set(plan)
+
+      //do indexing for invited users
+      plan.members.forEach((member)=>{
+        const uid = member.uid
+        UserData.addPlan(uid, planKey, plan.plannedForTimestamp)
+      })
     })
   }
 

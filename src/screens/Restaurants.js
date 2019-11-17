@@ -273,11 +273,16 @@ class Restaurants extends React.Component<Props, State> {
       this.props.navigation.navigate('Recommend', {restaurant:item})
     };
 
+    const onPlanPress = () => {
+      this.props.navigation.navigate(Values.Screens.SCREEN_MAKE_PLAN, {restaurant:item})
+    }
+
     return (
       <ResturantListItem 
         item={item}
         onRecommendPress={onRecommendPress}
         onRestaurantPress={this.showResturantDetails}
+        onPlanPress={onPlanPress}
       />
     );
     

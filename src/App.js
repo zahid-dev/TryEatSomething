@@ -30,13 +30,16 @@ import RestaurantDetails from './screens/RestaurantDetails';
 import Recommend from './screens/Recommend';
 import Plans from './screens/Plans';
 import PlanDetailsScreen from './screens/PlanDetailsScreen';
+import MakePlanScreen from './screens/MakePlanScreen';
+import UserSearchScreen from './screens/UserSearchScreen';
 import Profile from './screens/Profile';
 import * as Values from './res/Values';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
+
 console.disableYellowBox = true;
 
-class HomeScreen extends React.Component {
+class HomeScreen extends React.Component<{}> {
 
   state = {
     isLogin: false, 
@@ -84,6 +87,9 @@ const RestaurantNavigator = createStackNavigator(
     Restaurants: {screen: Restaurants},
     RestaurantDetails: {screen: RestaurantDetails},
     Recommend: {screen: Recommend},
+    MakePlan:{screen:MakePlanScreen},
+    UserSearch:{screen:UserSearchScreen}
+
   },
   {
     initialRouteName: 'Restaurants',
@@ -95,6 +101,10 @@ const FeedNavigator = createStackNavigator(
     Profile: {screen: Profile},
     Users: {screen: Users},
     RestaurantDetails: {screen: RestaurantDetails},
+    Recommend:{screen:Recommend},
+    MakePlan:{screen:MakePlanScreen},
+    UserSearch:{screen:UserSearchScreen}
+
   },
   {
     initialRouteName: 'Feed',
@@ -132,7 +142,7 @@ const TabNavigator = createBottomTabNavigator(
         } else if (routeName === 'Restaurants') {
           iconName = Values.Images.RESTAURANTS;
         } else if (routeName === 'Plans') {
-          iconName = 'adjust';
+          iconName = Values.Images.IC_PLAN
         } else if (routeName === 'Profile') {
           iconName = Values.Images.USER;
         }

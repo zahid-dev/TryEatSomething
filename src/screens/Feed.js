@@ -115,19 +115,34 @@ class Feed extends React.Component {
   }
 
 
+  _renderListItem = ({item, index}) => { 
+  
+    onPlanPress = () => {
+      this.props.navigation.navigate(Values.Screens.SCREEN_MAKE_PLAN, {restaurant:item.restaurant})
+    }
+
+    return (
+      <ResturantListItem 
+        item={item} 
+        mode='recommendation'
+        onUserPress={this.showUserProfile}
+        onRestaurantPress={this.showRestaurantDetails}
+        onPlanPress={onPlanPress}
+        />
+    );
+  }
+
+
   _renderRecommendations(DatArray) {
+
+    const onPlanPress = () => {
+      this.props.navigation.navigate(Values.Screens.SCREEN_MAKE_PLAN, {restaurant:item})
+    }
 
     return (
       <FlatList
         data={DatArray}
-        renderItem={({item, index}) => (
-          <ResturantListItem 
-            item={item} 
-            mode='recommendation'
-            onUserPress={this.showUserProfile}
-            onRestaurantPress={this.showRestaurantDetails}
-            />
-        )}
+        renderItem={this._renderListItem}
         keyExtractor={item => item.key}
       />
     );

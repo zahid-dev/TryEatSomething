@@ -7,6 +7,10 @@ export class Restaurant {
 
 }
 
+export class User {
+    name:string
+}
+
 export class UserData {
     static get PATH_PLANS(){return 'plans'}
 }
@@ -18,12 +22,14 @@ export class Plan {
     createdAtTimestamp:number
     restaurantKey:string
     restaurant:Restaurant
-    members:Array<{
-        uid:string,
-        name:string,
-        photoURL:string,
-        status:string
-    }>
+    members:Array<PlanMember>
 
     static get PATH_BASE(){return 'plan'}
+}
+
+export class PlanMember {
+    uid:string
+    name:string
+    photoURL:string
+    status:string
 }
