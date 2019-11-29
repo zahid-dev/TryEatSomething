@@ -295,15 +295,16 @@ export class Recommendation {
 
 export class User {
 
-  static async getUser(uid){
-    let userData = await firebase
+  static async getUser(uid:string):Contract.User{
+    let userSnapshot = await firebase
     .database()
     .ref(`users/${uid}`)
     .once('value', snapshot1 => {
       //console.log(snapshot1);
       return snapshot1;
     });
-    const user = userData.val();
+    const user = userSnapshot.val();
+    user.uid = userSnapshot.key;
     return user;
   }
 
@@ -481,8 +482,42 @@ export class UserData {
 
   static fetchFollowers():Promise<Array<Contract.User>>{
     return new Promise((resolve, reject)=>{
-      resolve([])
+      const uid = firebase.auth().currentUser.uid;
+      firebase.database().ref(Contract.UserData.PATH_BASE)
+        .child(uid)
+        .child(Contract.UserData.PATH_FOLLOWERS)
+        .once('value', (snapshot)=>{
+          if(snapshot.val()){
+            const promises = []
+            snapshot.forEach((childSnap)=>{
+              if(childSnap.val()){
+                const followerUid = childSnap.key;
+                //fetch users
+                promises.push(User.getUser(followerUid))
+              }
+            })
+
+            Promise.all(promises)
+            .then(users => resolve(users))
+            .catch(err=>console.warn("Failed to fetch users using follower ids"))
+          }
+        },(error)=>{
+
+        })
     });
+  }
+
+  static addPlan(uid, planKey, priority){
+    firebase.database().ref(Contract.UserData.PATH_BASE)
+      .child(uid)
+      .child(Contract.UserData.PATH_PLANS)
+      .child(planKey)
+      .set(priority, (err)=>{
+        if(!err){
+
+        }
+      })
+      
   }
 
   static async getRecommendations(uid){
@@ -559,12 +594,18 @@ export class Plan {
       const ref = firebase.database().ref(Contract.Plan.PATH_BASE).push()
       const planKey = ref.key;
 
-      ref.set(plan)
+      ref.set(plan, (err)=>{
+        if(!err){
+          resolve(true);
+        }else{
+          reject(err)
+        }
+      })
 
       //do indexing for invited users
       plan.members.forEach((member)=>{
         const uid = member.uid
-        UserData.addPlan(uid, planKey, plan.plannedForTimestamp)
+        UserData.addPlan(uid, planKey, plan.priority)
       })
     })
   }

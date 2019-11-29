@@ -13,11 +13,17 @@ import {
 import * as Contract from '../firebase/Contract';
 import * as DatabaseHelpers from '../firebase/DatabaseHelpers';
 import * as Values from '../res/Values';
-import { Button } from 'react-native-elements';
+import { 
+    Button,
+    CheckBox,
+ } from 'react-native-elements';
+import UserHeader from '../components/UserHeader';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 const PARAM_ON_MEMBERS_SELECTED = "onMembersSelected";
 const PARAM_SELECTED_MEMBERS = "selectedMembers";
+const PARAM_ON_DONE_PRESS = "onDonePress";
 
 type Params = {
     selectedMembers:Array<Contract.PlanMember>,
@@ -52,11 +58,7 @@ export default class UserSearchScreen extends React.Component<Props, State> {
     static navigationOptions = (args:any) => {
         const navigation:Navigation = args.navigation;
 
-        const onDonePress = () => {
-            const onMembersSelected = navigation.getParam(PARAM_ON_MEMBERS_SELECTED, ()=>{})
-            const selectedMembers = navigation.getParam(PARAM_SELECTED_MEMBERS, [])
-            onMembersSelected(selectedMembers)
-        }
+        const onDonePress = navigation.getParam(PARAM_ON_DONE_PRESS)
 
         const headerRight = (
             <Button 
@@ -68,16 +70,35 @@ export default class UserSearchScreen extends React.Component<Props, State> {
         );
 
         return {
-            headerTitle:"User Search",
+            headerTitle:"Select Users",
             headerRight,
         }
     }
 
+    constructor(props:Props){
+        super(props);
+        const {navigation} = props
+        
+
+        navigation.setParams({
+            onDonePress:()=>{
+                const onMembersSelected = navigation.getParam(PARAM_ON_MEMBERS_SELECTED, ()=>{})
+                const selectedMembers = [];
+                const membersMap = this.state.selectedMembersMap;
+                membersMap.forEach((member)=>{
+                    selectedMembers.push(member)
+                })
+                onMembersSelected(selectedMembers)
+                navigation.goBack();
+            }
+        })
+    }
 
     componentDidMount(){
         this.mapMembersArrayToMap()
         this.fetchUsers();
     }
+
 
     mapMembersArrayToMap(){
         const selectedMembers:Array<Contract.PlanMember> = this.props.navigation.getParam(PARAM_SELECTED_MEMBERS, [])
@@ -110,17 +131,43 @@ export default class UserSearchScreen extends React.Component<Props, State> {
         }
     }
 
+    onUserPress = (user:Contract.User) => {
+        const uid = user.uid;
+
+        const membersMap = this.state.selectedMembersMap
+        if(membersMap.get(uid)){
+           membersMap.delete(uid);
+        }else{
+           const member = new Contract.PlanMember();
+           member.uid = uid;
+           member.name = user.Name;
+           member.status = Contract.PlanMember.STATUS_PENDING;
+           member.photoURL = user.photoURL;
+           membersMap.set(uid, member)
+        }
+        this.setState({selectedMembersMap:membersMap})
+    }
+
     _renderItem = (args) => {
         const user:Contract.User = args.item;
-
         const member = this.state.selectedMembersMap.get(user.uid)
+        const isSelected = member? true:false
 
-        const value = member? "Selected":"Not Selected";
+        const onUserPress = () => {
+            this.onUserPress(user);
+        }
 
         return (
-            <View style={styles.itemContainer}>
-                <Text>{value}</Text>
-            </View>
+            <TouchableOpacity onPress={onUserPress} >
+                <View style={styles.itemContainer}>  
+                    <UserHeader user={user} />
+                    <CheckBox 
+                        checked={isSelected}
+                        checkedColor={Values.Colors.COLOR_PRIMARY}
+                    />
+                </View>
+            </TouchableOpacity>
+            
         )
     }
 
@@ -128,14 +175,13 @@ export default class UserSearchScreen extends React.Component<Props, State> {
         const users = this.state.users
         return (
             <View style={styles.container}>
-                    <Text>{"TODO: Update methods for fetching users for this lists.....\n\nDatabaseHelpers.User.fetchWithQuery\nDatabaseHelpers.UserData.fetchFollowers"}</Text>
-        
                 <FlatList 
                     data={users}
                     renderItem={this._renderItem}
+                    keyExtractor={item=>item.uid}
+                    extraData={this.state}
                 />
-                    </View>
-
+            </View>
         )
     }
 }
@@ -146,6 +192,7 @@ const styles = StyleSheet.create({
     },
     itemContainer:{
         flexDirection:'row',
-        padding:16
+        padding:16,
+        justifyContent:'space-between'
     }
 })

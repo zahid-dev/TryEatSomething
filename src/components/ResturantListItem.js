@@ -19,6 +19,7 @@ import {
 import * as Values from '../res/Values';
 import RatingStars from '../components/RatingStars';
 import { getImageSource } from 'react-native-vector-icons/FontAwesome';
+import UserHeader from './UserHeader';
 
 const MODE_RESTAURANT = 'restaurant'
 const MODE_RECOMMENDATION = 'recommendation'
@@ -74,17 +75,7 @@ export default class RestaurantListItem extends React.Component<Props, State> {
 
         return (
             <TouchableOpacity onPress={onUserPress}>
-                <View style={{flexDirection:'row', marginTop:8}}>
-                    <Image 
-                        style={{width:32, height:32, tintColor:Values.Colors.COLOR_GRAY, marginRight:8}}
-                        source={Values.Images.USER}
-                        resizeMode="contain"
-                    />
-                    <View>
-                        <Text>{item.user.Name} </Text>
-                        <Text style={{color:Values.Colors.COLOR_GRAY}} >{subTitle}</Text>
-                    </View>
-                </View>
+                <UserHeader user={user} />
             </TouchableOpacity>
         )
     }

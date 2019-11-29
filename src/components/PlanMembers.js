@@ -7,6 +7,7 @@ import React from 'react';
 import { 
     View, 
     Text, 
+    Image,
     StyleSheet
 } from "react-native";
 import {
@@ -20,7 +21,8 @@ import * as Contract from '../firebase/Contract';
 
 type Props = {
     members:Array<Contract.PlanMember>,
-    onAddPress:()=>void
+    onAddPress:()=>void,
+    onRemoveMember:(number)=>void
 }
 
 type State = {
@@ -32,9 +34,32 @@ export default class PlanMembers extends React.Component<Props, State> {
 
     _renderItem=(args)=>{
         const member:Contract.PlanMember = args.item;
+        const removeMember = () => {
+            console.log("Remove member:  " + member.uid + " at index: " + args.index)
+            this.props.onRemoveMember(args.index);
+        }
+
         return (
-            <View>
-                <Text>{member.name}</Text>
+            <View style={{flexDirection:'row', flex:1}}>
+                <View style={{flexDirection:'row', marginTop:8, flex:1}}>
+                    <Image 
+                        style={{width:32, height:32, tintColor:Values.Colors.COLOR_GRAY, marginRight:8}}
+                        source={Values.Images.USER}
+                        resizeMode="contain"
+                    />
+                    <View>
+                        <Text>{member.name} </Text>
+                        <Text style={{color:Values.Colors.COLOR_GRAY}}>
+                            {member.status}
+                        </Text>
+                    </View>
+                </View>
+                <Button 
+                    title="X"
+                    type='clear'
+                    titleStyle={{color:Values.Colors.COLOR_BLACK}}
+                    onPress={removeMember}
+                />
             </View>
         )
     }
@@ -73,7 +98,7 @@ const styles = StyleSheet.create({
         color:Values.Colors.COLOR_GRAY
     },
     btnTitleStyle:{
-        color:Values.Colors.COLOR_BLACK,
+        color:Values.Colors.COLOR_PRIMARY,
     },
     btnAddWrapperStyle:{
         justifyContent: 'flex-start',
