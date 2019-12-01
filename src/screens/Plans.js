@@ -15,7 +15,8 @@ import {Card, CardSection} from '../components/common';
 import {withNavigation} from 'react-navigation';
 import axios from 'axios';
 import * as DatabaseHelpers from '../firebase/DatabaseHelpers';
-import * as Contract from '../firebase/Contract'
+import * as Contract from '../firebase/Contract';
+import * as Values from '../res/Values';
 import PlanListItem from '../components/PlanListItem';
 
 type State = {
@@ -37,7 +38,6 @@ class Plans extends React.Component {
     this.fetchPlans();
   }
 
-
   fetchPlans(){
     this.setState({isLoading:true})
     DatabaseHelpers.UserData.fetchUserPlans()
@@ -58,6 +58,17 @@ class Plans extends React.Component {
       })
   }
 
+  openPlanDetails = (planKey:string) => {
+    if(!planKey){
+      console.warn("Cannot open plan details screen, Plan key not passed")
+      return;
+    }
+
+    const {navigation} = this.props;
+    navigation.navigate(Values.Screens.SCREEN_PLAN_DETAILS, {planKey})
+
+  }
+
   _renderActivityIndicator(){
     return (
       <View style={styles.loadingPlaceholder}>
@@ -68,7 +79,10 @@ class Plans extends React.Component {
 
   _renderItem = ({item, index}) => {
     return (
-      <PlanListItem item={item} />
+      <PlanListItem 
+        item={item} 
+        onPlanPress={this.openPlanDetails}
+        />
     )
   }
 

@@ -536,13 +536,11 @@ export class UserData {
     try {
       //fetch plan keys for uesr
       const uid = firebase.auth().currentUser.uid;
-      const snapshot = firebase.database().ref(Contract.UserData.PATH_PLANS)
+      const snapshot = await firebase.database().ref(Contract.UserData.PATH_BASE)
+      .child(uid)
+      .child(Contract.UserData.PATH_PLANS)
       .orderByValue()
-      .once('value', (snapshot)=>{
-        return snapshot
-      },(error)=>{
-        console.warn("Failed to fetch plans: " + JSON.stringify(error))
-      });
+      .once('value', (snapshot)=>{}, (err)=>{console.warn(err)});
 
       //iterate and fetch plans
       const promises = []
@@ -551,7 +549,8 @@ export class UserData {
         promises.push(Plan.getPlan(planKey))
       })
 
-      const plans = Promise.all(promises);
+      const plans = await Promise.all(promises);
+      console.log("Returning plans list: " + JSON.stringify(plans));
       return plans;
 
     }
@@ -574,6 +573,7 @@ export class Plan {
         (snapshot)=>{
           const plan = snapshot.val();
           if(plan){
+            plan.key = snapshot.key;
             resolve(plan)
           }else{
             reject(new Error("No plan returned in snapshot"))

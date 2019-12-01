@@ -42,5 +42,6 @@ export class PlanMember {
     status:string
 
     static get STATUS_PENDING(){return 'PENDING'}
+    static get STATUS_INTERESTED(){return 'INTERESTED'}
     static get STATUS_GOING(){return 'GOING'}
 }

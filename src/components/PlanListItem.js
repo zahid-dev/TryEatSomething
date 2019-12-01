@@ -7,7 +7,6 @@ import React from 'react';
 import {
     Text,
     View,
-    Button,
     Platform,
     TouchableOpacity,
     StyleSheet,
@@ -15,30 +14,31 @@ import {
     Image,
 } from 'react-native';
 
+import {Button} from 'react-native-elements';
 import * as Values from '../res/Values';
 import RatingStars from '../components/RatingStars';
 import { getImageSource } from 'react-native-vector-icons/FontAwesome';
 import * as Contract from '../firebase/Contract';
 
-const MODE_RESTAURANT = 'restaurant'
-const MODE_RECOMMENDATION = 'recommendation'
-
 type Props = {
     item:Contract.Plan,
-    mode:MODE_RECOMMENDATION|MODE_RESTAURANT,
-    onRestaurantPress:(string)=>void
+    onPlanPress:(string)=>void
 }
 
 type State = {
-
+    thisMemberStatus:string
 }
 
 export default class PlanListItem extends React.Component<Props, State> {
 
+    state = {
+        thisMemberStatus:Contract.PlanMember.STATUS_PENDING
+    }
+
     showDirectionsOnMap = () => {
         const item = this.props.item;
+        const restaurant = item.restaurant;
 
-        const restaurant = item.restaurant?item.restaurant:item;
         if(!restaurant.location) {
             alert("Location data not available for this restaurant");
             return;
@@ -56,77 +56,69 @@ export default class PlanListItem extends React.Component<Props, State> {
         Linking.openURL(url); 
     }
 
-
-    _renderUserRelatedInfo(){
-        const item = this.props.item;
-        const user = item.user;
-
-        if(!user) return null;
-
-        const username = item.user.Name;
-        const subTitle = `${item.user.totalRecommendations} Recommendataions - ${item.user.totalFollowers} Followers`;
-        
-        const onUserPress = () => {
-            this.props.onUserPress(item.uid)
-        }
-
-        return (
-            <TouchableOpacity onPress={onUserPress}>
-                <View style={{flexDirection:'row', marginTop:8}}>
-                    <Image 
-                        style={{width:32, height:32, tintColor:Values.Colors.COLOR_GRAY, marginRight:8}}
-                        source={Values.Images.USER}
-                        resizeMode="contain"
-                    />
-                    <View>
-                        <Text>{item.user.Name} </Text>
-                        <Text style={{color:Values.Colors.COLOR_GRAY}} >{subTitle}</Text>
-                    </View>
-                </View>
-            </TouchableOpacity>
-        )
-    }
-
     _renderItemHeader(){
         const {mode, item} = this.props;
-
-        const recommendationMode = mode === MODE_RECOMMENDATION;
-        const restaurant = recommendationMode? item.restaurant:item;
+        const restaurant = item.restaurant
         
         if(!restaurant) return null;
 
-        const waitTimeText = item.waittime + " Min";
         const imgSource = {uri:(restaurant.photoURL || restaurant.photo)};
         
         return (
-            <View>
-                
+            <View style={{marginTop:16}}>
                 <Image
                     style={styles.imageRestaurant}
                     source={imgSource}
                     resizeMode='cover'
                     />
-        
-                {
-                    item.rating &&
-                    <View style={styles.ratingContainer}>
-                        <RatingStars rating={item.rating||4} size={16} />
-                    </View>
-                }
-                {
-                    // item.waittime &&
-                    // <View style={styles.waitTimeContainer}>
-                    //     <Text style={{color:Values.Colors.COLOR_GRAY, fontWeight:'600'}}>{waitTimeText}</Text> 
-                    // </View>
-                }
+                
+                <View style={styles.ratingContainer}>
+                    <Text style={{fontWeight:'600'}}>
+                        {item.title}
+                    </Text>
+                </View>
+                
+                <View style={styles.waitTimeContainer}>
+                    <Text>
+                        {"Wed 12:14"}
+                    </Text>
+                </View>
             </View>
         )
     }
 
+    _renderStatusButton(){
+        const thisMemberStatus = this.state.thisMemberStatus;
+        const onPress = () => {
+            const planKey = this.props.item.key;
+            this.props.onPlanPress(planKey);
+        }
+        return (
+            <TouchableOpacity onPress={()=>{}} >
+                <View style={{
+                        width:100, 
+                        backgroundColor:Values.Colors.COLOR_PRIMARY, 
+                        justifyContent:'center', 
+                        alignItems:'center', 
+                        borderRadius:16,
+                        paddingTop:4,
+                        paddingBottom:4,
+                        }}>
+                        <Text style={{
+                            color:Values.Colors.COLOR_WHITE               
+                            }}>
+                            {this.state.thisMemberStatus}
+                        </Text>
+                </View>
+            </TouchableOpacity>
+        )
+        
+    }
+
     _renderContent(){
         const {mode, item} = this.props;
-        const recommendationMode = mode === MODE_RECOMMENDATION;
-        const restaurant = recommendationMode? item.restaurant:item;
+    
+        const restaurant = item.restaurant;
         if(!restaurant) return null;
 
         var categoryText = "Food";
@@ -134,21 +126,65 @@ export default class PlanListItem extends React.Component<Props, State> {
            categoryText = restaurant.categories[0].name;
         }catch{}
 
-        const subText = recommendationMode? item.description:restaurant.address.join(', ');
+        const subText = restaurant.address.join(', ');
         return (
             <View style={styles.bottomLine1}>
                 <View style={{flex:1}}>
-                    <Text style={{color:Values.Colors.COLOR_PRIMARY, fontWeight:'600'}}>{categoryText}</Text>
                     
-                    <Text style={styles.title}>{restaurant.name}</Text>
+                    <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                        <View>
+                            <Text style={{color:Values.Colors.COLOR_PRIMARY, fontWeight:'600'}}>{categoryText}</Text>
+                            <Text style={styles.title}>{restaurant.name}</Text>
+                        </View>
+                        {this._renderStatusButton()}
+                    </View>
     
-                    <Text style={styles.subTitle} numberOfLines={recommendationMode?0:1}>
-                    {subText}
+                    <Text style={styles.subTitle} numberOfLines={1}>
+                        {subText}
                     </Text>
-                    {mode === MODE_RECOMMENDATION &&
-                        this._renderUserRelatedInfo()
-                    }
+
+                    { item.description && (
+                        <Text style={styles.subTitle}>
+                            {item.description}
+                        </Text>
+                        )
+                    }    
+            
+                   {
+                       this._renderStats()
+                   }   
+   
                 </View>
+            </View>
+        )
+    }
+
+    _renderStats(){
+        const plan = this.props.item
+        var going = 0;
+        var interested = 0;
+        var pending = 0;
+
+        plan.members.forEach((member)=>{
+            switch(member.status){
+                case Contract.PlanMember.STATUS_PENDING:
+                    pending++;
+                    break;
+                case Contract.PlanMember.STATUS_GOING:
+                    going++
+                    break;
+                case Contract.PlanMember.STATUS_INTERESTED:
+                    interested++;
+                    break;
+            }
+        })
+
+        const statsLabel = `${going} Going, ${interested} Interseted, ${pending} Pending`;
+        return (
+            <View>
+                <Text>
+                    {statsLabel}
+                </Text>
             </View>
         )
     }
@@ -156,42 +192,36 @@ export default class PlanListItem extends React.Component<Props, State> {
     _renderActionPanel(){
         const item = this.props.item;
         const mode = this.props.mode;
-        const recommendationMode = mode === MODE_RECOMMENDATION;
-        const restaurantKey = recommendationMode? item.restaurantKey:item.id
+
+        const planKey = item.key
         return (
             <View style={styles.actionPanel}>
-                {!recommendationMode &&
-                    <Button 
-                        title={'Recommend'} 
-                        color={Values.Colors.COLOR_BLACK} 
-                        onPress={this.props.onRecommendPress} />
-                }
-                {!recommendationMode &&
-                    <View style={{width:StyleSheet.hairlineWidth, height:'100%', backgroundColor:Values.Colors.COLOR_MID_GRAY}}/>
-                }
+            
                 <Button 
                     title={'Details'} 
-                    color={Values.Colors.COLOR_BLACK}  
-                    onPress={()=>{this.props.onRestaurantPress(restaurantKey)}} />
+                    titleStyle={{color:Values.Colors.COLOR_BLACK}}  
+                    type='clear'
+                    onPress={()=>{this.props.onPlanPress(planKey)}} />
                 <View style={{width:StyleSheet.hairlineWidth, height:'100%', backgroundColor:Values.Colors.COLOR_MID_GRAY}}/>
                 <Button 
                     title={'Directions'} 
-                    color={Values.Colors.COLOR_BLACK}  
+                    titleStyle={{color:Values.Colors.COLOR_BLACK}}  
+                    type='clear'
                     onPress={this.showDirectionsOnMap} />
             </View>
         )
     }
 
     render(){
-        const item = this.props.item;
+        const plan = this.props.item;
         const onContainerPress = () => {
-            const restaurantKey = this.props.mode === MODE_RECOMMENDATION? item.restaurantKey:item.id; 
-            this.props.onRestaurantPress(restaurantKey)
+            const planKey = plan.key; 
+            this.props.onPlanPress(planKey)
         }
         return (
             <TouchableOpacity onPress={onContainerPress}>
                 <View style={styles.container}>
-                
+ 
                 {
                     this._renderItemHeader()
                 }
@@ -200,10 +230,12 @@ export default class PlanListItem extends React.Component<Props, State> {
                    {
                        this._renderContent()
                    }
+         
                    <View style={{height:StyleSheet.hairlineWidth, width:'100%', backgroundColor:Values.Colors.COLOR_MID_GRAY}}/>
                    {
                        this._renderActionPanel()
                    }
+                
                 </View>
 
                 </View>

@@ -48,5 +48,6 @@ export class Numbers {
 
 export class Screens {
   static get SCREEN_MAKE_PLAN(){return "MakePlan"}
+  static get SCREEN_PLAN_DETAILS(){return "PlanDetails"}
   static get SCREEN_USER_SEARCH(){return 'UserSearch'}
 }
