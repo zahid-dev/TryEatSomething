@@ -6,6 +6,7 @@
 import firebase from 'react-native-firebase'
 import * as Contract from '../firebase/Contract'
 
+
 export class Recommendation {
 
     static makeRecommendation(id, rating, waittime, description, restaurant):Promise<any> {
@@ -311,7 +312,28 @@ export class User {
   static fetchWithQuery(query:string):Promise<Array<Contract.User>>{
     return new Promise((resolve, reject)=>{
       //TODO: update method with proper query
-      resolve([])
+      query = query.toLowerCase();
+      firebase.database().ref(Contract.User.PATH_BASE)
+        .orderByChild(Contract.User.CHILD_TAG)
+        .startAt(query)
+        .endAt(query+"\uf8ff")
+        .once(
+          'value',
+          (snapshot)=>{
+            const users = [];
+            snapshot.forEach((userSnap)=>{
+              const user = userSnap.val();
+              if(user){
+                user.uid = userSnap.key;
+                users.push(user);
+              }
+            })
+            resolve(users);
+          },
+          (err)=>{
+            reject(err);
+          }
+        )
     })
   }
 
@@ -517,7 +539,18 @@ export class UserData {
 
         }
       })
-      
+  }
+
+  static removePlan(uid, planKey){
+    firebase.database().ref(Contract.UserData.PATH_BASE)
+      .child(uid)
+      .child(Contract.UserData.PATH_PLANS)
+      .child(planKey)
+      .remove((err)=>{
+        if(!err){
+          console.log("Removed plan entry from user data")
+        }
+      })
   }
 
   static async getRecommendations(uid){
@@ -569,7 +602,7 @@ export class Plan {
       firebase.database().ref(Contract.Plan.PATH_BASE)
       .child(planKey)
       .once(
-        'once',
+        'value',
         (snapshot)=>{
           const plan = snapshot.val();
           if(plan){
@@ -585,6 +618,33 @@ export class Plan {
         }
       )
     })
+  }
+
+
+  static listenForPlan(planKey:string, onCallback:(Contract.Plan)=>void, onError:(Error)=>void){
+    console.log("Fetching plan for key: " + planKey)
+    const ref = firebase.database().ref(Contract.Plan.PATH_BASE)
+      .child(planKey);
+
+    const snapshotCallback = (snapshot) => {
+      const plan = snapshot.val();
+      if(plan){
+        plan.key = snapshot.key;
+        onCallback(plan)
+      }else{
+        onError(new Error("No plan returned in snapshot"))
+      }
+    }
+
+    ref.on(
+      'value',
+      snapshotCallback,
+      (err)=>{
+        console.warn("Failed to get plan: " + JSON.stringify(err))
+        onError(err)
+      }
+    )
+    return {ref, snapshotCallback};
   }
 
 
@@ -607,6 +667,28 @@ export class Plan {
         const uid = member.uid
         UserData.addPlan(uid, planKey, plan.priority)
       })
+    })
+  }
+
+  static updatePlan(planKey:string, plan:Contract.Plan):Promise<boolean>{
+    return new Promise((resolve, reject)=>{
+      
+      firebase.database().ref(Contract.Plan.PATH_BASE)
+      .child(planKey)
+      .update(plan, (error)=>{
+        if(!error){
+          resolve(true)
+        }else{
+          reject(error)
+        }
+      })
+
+      //do indexing for invited users
+      plan.members.forEach((member)=>{
+        const uid = member.uid
+        UserData.addPlan(uid, planKey, plan.priority)
+      })
+
     })
   }
 

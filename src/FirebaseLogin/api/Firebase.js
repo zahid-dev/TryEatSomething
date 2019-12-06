@@ -29,7 +29,9 @@ class Firebase {
     });
   };
 
-  createFirebaseAccount = (name, email, password) => {
+
+
+  createFirebaseAccount = (name:string, email, password) => {
     return new Promise(resolve => {
       firebase
         .auth()
@@ -57,6 +59,7 @@ class Firebase {
             .ref(`users/${data.user.uid}`)
             .set({
               Name: name,
+              tag: name.toLowerCase(),
               totalRecommendations: 0,
               totalFollowers: 0,
               totalFollowing: 0,

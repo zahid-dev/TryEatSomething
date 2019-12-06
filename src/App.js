@@ -115,6 +115,7 @@ const FeedNavigator = createStackNavigator(
 const PlansNavigator = createStackNavigator({
   Plans:{screen:Plans},
   PlanDetails:{screen:PlanDetailsScreen},
+  UserSearch:{screen:UserSearchScreen}
 })
 
 const ProfileNavigator = createStackNavigator(

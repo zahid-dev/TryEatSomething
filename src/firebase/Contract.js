@@ -10,8 +10,12 @@ export class Restaurant {
 export class User {
     name:string
     photoURL:string
+    tag:string
     totalRecommendations:number
     totalFollowers:number
+
+    static get PATH_BASE(){return 'users'}
+    static get CHILD_TAG(){return 'tag'}
 }
 
 export class UserData {
@@ -44,4 +48,5 @@ export class PlanMember {
     static get STATUS_PENDING(){return 'PENDING'}
     static get STATUS_INTERESTED(){return 'INTERESTED'}
     static get STATUS_GOING(){return 'GOING'}
+    static get STATUS_NOT_GOING(){return 'NOT_GOING'}
 }

@@ -66,9 +66,6 @@ class Users extends React.Component {
         this.setState({data1Array: data});
       });
   }
-
-
-
   
 
 

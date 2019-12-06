@@ -17,8 +17,8 @@ import {
 import {Button} from 'react-native-elements';
 import * as Values from '../res/Values';
 import RatingStars from '../components/RatingStars';
-import { getImageSource } from 'react-native-vector-icons/FontAwesome';
 import * as Contract from '../firebase/Contract';
+import firebase from 'react-native-firebase';
 
 type Props = {
     item:Contract.Plan,
@@ -26,13 +26,56 @@ type Props = {
 }
 
 type State = {
-    thisMemberStatus:string
+    thisMemberStatus:string,
+    numGoing:number,
+    numInterested:number,
+    numPending:number,
 }
 
 export default class PlanListItem extends React.Component<Props, State> {
 
     state = {
-        thisMemberStatus:Contract.PlanMember.STATUS_PENDING
+        thisMemberStatus:Contract.PlanMember.STATUS_PENDING,
+        numGoing:0,
+        numInterested:0,
+        numPending:0
+    }
+
+    static getDerivedStateFromProps(props:Props, state:State){
+        const plan = props.item;
+        const uid  = firebase.auth().currentUser.uid;
+
+        if(plan){
+            var thisMemberStatus = Contract.STATUS_PENDING
+            var going = 0;
+            var interested = 0;
+            var pending = 0;
+            plan.members.forEach((member)=>{
+
+                if(member.uid === uid){
+                    thisMemberStatus = member.status
+                }
+
+                switch(member.status){
+                    case Contract.PlanMember.STATUS_PENDING:
+                        pending++;
+                        break;
+                    case Contract.PlanMember.STATUS_GOING:
+                        going++
+                        break;
+                    case Contract.PlanMember.STATUS_INTERESTED:
+                        interested++;
+                        break;
+                }
+            })
+
+            state.thisMemberStatus = thisMemberStatus;
+            state.numGoing = going;
+            state.numInterested = interested;
+            state.numPending = pending;
+        }
+
+        return state;  
     }
 
     showDirectionsOnMap = () => {
@@ -56,12 +99,12 @@ export default class PlanListItem extends React.Component<Props, State> {
         Linking.openURL(url); 
     }
 
+
     _renderItemHeader(){
         const {mode, item} = this.props;
         const restaurant = item.restaurant
         
         if(!restaurant) return null;
-
         const imgSource = {uri:(restaurant.photoURL || restaurant.photo)};
         
         return (
@@ -87,6 +130,7 @@ export default class PlanListItem extends React.Component<Props, State> {
         )
     }
 
+
     _renderStatusButton(){
         const thisMemberStatus = this.state.thisMemberStatus;
         const onPress = () => {
@@ -94,7 +138,7 @@ export default class PlanListItem extends React.Component<Props, State> {
             this.props.onPlanPress(planKey);
         }
         return (
-            <TouchableOpacity onPress={()=>{}} >
+            <TouchableOpacity onPress={onPress} >
                 <View style={{
                         width:100, 
                         backgroundColor:Values.Colors.COLOR_PRIMARY, 
@@ -112,8 +156,8 @@ export default class PlanListItem extends React.Component<Props, State> {
                 </View>
             </TouchableOpacity>
         )
-        
     }
+
 
     _renderContent(){
         const {mode, item} = this.props;
@@ -149,7 +193,6 @@ export default class PlanListItem extends React.Component<Props, State> {
                         </Text>
                         )
                     }    
-            
                    {
                        this._renderStats()
                    }   
@@ -159,27 +202,10 @@ export default class PlanListItem extends React.Component<Props, State> {
         )
     }
 
+
     _renderStats(){
-        const plan = this.props.item
-        var going = 0;
-        var interested = 0;
-        var pending = 0;
-
-        plan.members.forEach((member)=>{
-            switch(member.status){
-                case Contract.PlanMember.STATUS_PENDING:
-                    pending++;
-                    break;
-                case Contract.PlanMember.STATUS_GOING:
-                    going++
-                    break;
-                case Contract.PlanMember.STATUS_INTERESTED:
-                    interested++;
-                    break;
-            }
-        })
-
-        const statsLabel = `${going} Going, ${interested} Interseted, ${pending} Pending`;
+        const {numGoing, numInterested, numPending} = this.state
+        const statsLabel = `${numGoing} Going, ${numInterested} Interseted, ${numPending} Pending`;
         return (
             <View>
                 <Text>
@@ -188,6 +214,7 @@ export default class PlanListItem extends React.Component<Props, State> {
             </View>
         )
     }
+
 
     _renderActionPanel(){
         const item = this.props.item;
@@ -211,6 +238,7 @@ export default class PlanListItem extends React.Component<Props, State> {
             </View>
         )
     }
+
 
     render(){
         const plan = this.props.item;
@@ -243,6 +271,7 @@ export default class PlanListItem extends React.Component<Props, State> {
           )
     }
 }
+
 
 const styles = StyleSheet.create({
     container: {

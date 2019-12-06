@@ -8,6 +8,7 @@ import {
     View,
     StyleSheet,
     FlatList,
+    TextInput,
     Text,
 } from 'react-native';
 import * as Contract from '../firebase/Contract';
@@ -24,6 +25,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 const PARAM_ON_MEMBERS_SELECTED = "onMembersSelected";
 const PARAM_SELECTED_MEMBERS = "selectedMembers";
 const PARAM_ON_DONE_PRESS = "onDonePress";
+const PARAM_UPDATE_SEARCH = "updateSearch";
 
 type Params = {
     selectedMembers:Array<Contract.PlanMember>,
@@ -59,6 +61,8 @@ export default class UserSearchScreen extends React.Component<Props, State> {
         const navigation:Navigation = args.navigation;
 
         const onDonePress = navigation.getParam(PARAM_ON_DONE_PRESS)
+        var query = "";
+        const updateSearch = navigation.getParam(PARAM_UPDATE_SEARCH, ()=>{})
 
         const headerRight = (
             <Button 
@@ -69,9 +73,22 @@ export default class UserSearchScreen extends React.Component<Props, State> {
             />
         );
 
+        const _renderSearchBar = () => {
+            return (
+              <View style={{flexDirection:'row', borderRadius:12, height:32, width:200, backgroundColor:Values.Colors.COLOR_LIGHT_GRAY}}>
+                <TextInput 
+                  style={{flex:1, paddingLeft:16, paddingRight:16, color:Values.Colors.COLOR_BLACK}} 
+                  placeholder="Search Users"
+                  onChangeText={(text)=>{updateSearch(text)}}
+                />
+              </View>
+            )
+          }
+
         return {
-            headerTitle:"Select Users",
+            headerTitle:_renderSearchBar(),
             headerRight,
+            headerBackTitle: null
         }
     }
 
@@ -90,6 +107,9 @@ export default class UserSearchScreen extends React.Component<Props, State> {
                 })
                 onMembersSelected(selectedMembers)
                 navigation.goBack();
+            },
+            updateSearch:(query)=>{
+                this.fetchUsers(query);
             }
         })
     }

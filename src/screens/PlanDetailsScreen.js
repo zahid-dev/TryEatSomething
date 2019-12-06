@@ -14,8 +14,8 @@ import {
   TouchableWithoutFeedback,
   ActivityIndicator,
 } from 'react-native';
-import firebase from 'react-native-firebase';
-import {Card, CardSection, Button} from '../components/common';
+import firebase, { Firebase } from 'react-native-firebase';
+import {Card, CardSection} from '../components/common';
 import {withNavigation} from 'react-navigation';
 import * as Contract from '../firebase/Contract';
 import * as DatabaseHelpers from '../firebase/DatabaseHelpers';
@@ -24,8 +24,9 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import PlanMembers from '../components/PlanMembers';
 import RestaurantHeader from '../components/RestaurantHeader';
 import DatePicker from 'react-native-datepicker';
-import * as moment from 'moment';
-
+import moment from 'moment';
+import { ButtonGroup, Button } from 'react-native-elements';
+import _ from 'underscore';
 
 const PARAM_PLAN_KEY = "planKey";
 
@@ -45,41 +46,71 @@ type Props = {
 
 type State = {
   plan:Contract.Plan|null,
-  isLoading:boolean
+  prevPlan:Contract.Plan|null,
+  isLoading:boolean,
+  thisMemberStatus:string,
 }
 
 class PlanDetailsScreen extends React.Component<Props, State> {
-
+  planFirebaseRef:any
+  planFirebaseSnapshotCallback:any
   state = {
     plan:null,
+    prevPlan:null,
     isLoading:false,
+    thisMemberStatus:Contract.PlanMember.STATUS_PEDNING
   }
 
   static navigationOptions = ({navigation}) => {
     return {
-      headerTitle:"Plan Details"
+      headerTitle:"Details"
     }
   }
 
   componentDidMount(){
-    this.fetchPlan()
+    this.listenForPlan();
+  }
+
+  componentWillUnmount(){
+    this.unlistenForPlan();
   }
 
 
-  fetchPlan(){
+  planCallbackListener = (plan) => {
+    var thisMemberStatus = Contract.STATUS_PENDING;
+    plan.members.forEach(member=>{
+      if(member.uid === firebase.auth().currentUser.uid){
+        thisMemberStatus = member.status;
+      }
+    })
+    this.setState({plan, isLoading:false, thisMemberStatus, prevPlan:Object.assign({}, plan)})
+  }
+
+
+  listenForPlan(){
     const planKey = this.props.navigation.getParam(PARAM_PLAN_KEY);
     this.setState({isLoading:true})
-    DatabaseHelpers.Plan.getPlan(planKey)
-      .then((plan) => {
-        this.setState({plan, isLoading:false})
-      })
-      .catch((err)=>{
+    const retPacket = DatabaseHelpers.Plan.listenForPlan(
+      planKey, 
+      this.planCallbackListener, 
+      (err)=>{
         this.setState({isLoading:false})
         console.warn("Failed to fetch plan: " + JSON.stringify(err))
         alert("Failed to fetch plan details, please try again later. " + err.message);
         this.props.navigation.goBack();
-      })
+      });
+    
+    this.planFirebaseRef = retPacket.ref;
+    this.planFirebaseSnapshotCallback = retPacket.snapshotCallback;
   }
+
+
+  unlistenForPlan(){
+    if(this.planFirebaseRef && this.planFirebaseSnapshotCallback){
+      this.planFirebaseRef.off('value', this.planFirebaseSnapshotCallback)
+    }
+  }
+
 
   _renderActivityInidcator(){
     return (
@@ -95,16 +126,120 @@ class PlanDetailsScreen extends React.Component<Props, State> {
     const params = {
         selectedMembers:this.state.plan.members,
         onMembersSelected:(members)=>{
-            this.setState({members})
+            this.setState(state=>{
+              state.plan.members = members;
+              return state;
+            })
         }
     }
     this.props.navigation.navigate(Values.Screens.SCREEN_USER_SEARCH, params)
   }
 
-  _renderTextInputs(){
-      const plan = this.state.plan;
 
+  _updateThisMemberStatus = (selectedIndex) => {
+    var updatedStatus = '';
+    switch(selectedIndex){
+      case 0:
+        updatedStatus = Contract.PlanMember.STATUS_GOING;
+        break;
+      case 1:
+        updatedStatus = Contract.PlanMember.STATUS_INTERESTED;
+        break;
+      case 2:
+        updatedStatus = Contract.PlanMember.STATUS_NOT_GOING;
+        break;
+      default:
+        updatedStatus = Contract.PlanMember.STATUS_PENDING;
+        break;
+    }
+
+    //set satus to designated member or update plan object directly
+    const uid = firebase.auth().currentUser.uid;
+    const plan = this.state.plan;
+
+    plan.members.forEach((member, index)=>{
+      if(member.uid === uid){
+        plan.members[index].status = updatedStatus;
+      }
+    })
+
+    //update plan object
+    this.setState({plan})
+    if(!plan) return;
+
+    const planKey = plan.key;
+    DatabaseHelpers.Plan.updatePlan(planKey, plan)
+      .then((status)=>{
+        //reload object on success
+        //this.fetchPlan();
+        console.log("Successfully updated plan with new member status")
+      })
+      .catch((err)=>{
+        //display error message
+        console.warn("Failed to update plan status, " + JSON.stringify(err))
+        alert("Failed to update plan member status, please try again later. " + err.message)
+      })
+  }
+
+
+  updatePlan = () => {
+    const plan = this.state.plan;
+    const planKey = this.props.navigation.getParam(PARAM_PLAN_KEY);
+    DatabaseHelpers.Plan.updatePlan(planKey, plan)
+      .then((status)=>{
+        if(status){
+          console.log("Successfully updated plan")
+        }
+      })
+      .catch((err)=>{
+        console.warn("Failed to update plan, " + JSON.stringify(err))
+        alert("Failed to update plan, " + err.message);
+      })
+  }
+
+  _renderStatusPanel(){
+
+    const buttons = ['Going', 'Interested', 'Not Going']
+    var selectedIndex = -1;
+    
+    switch(this.state.thisMemberStatus){
+      case Contract.PlanMember.STATUS_GOING: selectedIndex = 0; break;
+      case Contract.PlanMember.STATUS_INTERESTED: selectedIndex = 1; break;
+      case Contract.PlanMember.STATUS_NOT_GOING: selectedIndex = 2; break;
+      default: selectedIndex = -1; break;
+    }
+
+    return (
+      <View>
+        <ButtonGroup 
+          onPress={this._updateThisMemberStatus}
+          selectedIndex={selectedIndex}
+          buttons={buttons}
+          containerStyle={{height:32, borderRadius:16, marginTop:16, marginLeft:0, marginRight:0}}
+          selectedButtonStyle={{backgroundColor:Values.Colors.COLOR_PRIMARY}}
+        />
+      </View>
+    )
+  }
+
+
+  _renderDetails(){
+      const plan = this.state.plan;
      const date = new Date(plan.plannedForTimestamp);
+
+     const updatePlanObject = (values:Contract.Plan) => {
+        this.setState((state)=>{
+          const plan = state.plan;
+
+          for(const key in values){
+            if(plan.hasOwnProperty(key)){
+              plan[key] = values[key];
+            }
+          }
+          
+          return state;
+        })
+     }
 
       return (
           <View style={styles.contentContainer}>
@@ -116,7 +251,7 @@ class PlanDetailsScreen extends React.Component<Props, State> {
                   numberOfLines={31}
                   maxLength={30}
                   multiline={false}
-                  onChangeText={text => this.setState({title:text})}
+                  onChangeText={text => updatePlanObject({title:text})}
                   value={plan.title}
               />
               <TextInput
@@ -127,7 +262,7 @@ class PlanDetailsScreen extends React.Component<Props, State> {
            
                   maxLength={90}
                   multiline={true}
-                  onChangeText={text => this.setState({description:text})}
+                  onChangeText={text => updatePlanObject({description:text})}
                   value={plan.description}
               />
 
@@ -144,7 +279,14 @@ class PlanDetailsScreen extends React.Component<Props, State> {
                       cancelBtnText="Cancel"
                       iconSource={{}}
                       customStyles={stylesDatePicker}
-                      onDateChange={(date) => {this.setState({date: date})}}
+                      onDateChange={(date) => {
+                        const momentDate = moment(`${date}`,'Do MMM')
+                        const plannedForMoment = moment(plan.plannedForTimestamp)
+                        plannedForMoment.date(momentDate.date());
+                        plannedForMoment.month(momentDate.month());
+                        plannedForMoment.year(momentDate.year());
+                        updatePlanObject({plannedForTimestamp:plannedForMoment.valueOf()})
+                      }}
                   />
               </View>
 
@@ -160,12 +302,48 @@ class PlanDetailsScreen extends React.Component<Props, State> {
                       confirmBtnText="Confirm"
                       cancelBtnText="Cancel"
                       customStyles={stylesDatePicker}
-                      onDateChange={(time) => {this.setState({time: time})}}
+                      onDateChange={(time) => {
+                        const momentTime = moment(`${time}`,'hh:mm A')
+                        const plannedForMoment = moment(plan.plannedForTimestamp)
+                        plannedForMoment.minute(momentTime.minute());
+                        plannedForMoment.hour(momentTime.hour());
+                        updatePlanObject({plannedForTimestamp:plannedForMoment.valueOf()})
+                      }}
                   />
               </View>
+
+            
           </View>
+          {
+            this._renderStatusPanel()
+          }
           </View>
       );
+  }
+
+
+  _renderChatPanel(){
+    return null;
+    // return (
+    //   <View style={styles.contentContainer}>
+    //     <Text>Group Chat</Text>
+    //   </View>
+    // )
+  }
+
+  _renderActionPanel(){
+    const {plan, prevPlan} = this.state;
+    if(!_.isEqual(plan,prevPlan)){
+      return (
+          <Button 
+              title="Update Plan"
+              buttonStyle={styles.btnAction}
+              onPress={this.updatePlan}
+          />
+      )
+    }else {
+      return null;
+    }
   }
 
 
@@ -175,19 +353,24 @@ class PlanDetailsScreen extends React.Component<Props, State> {
       const {members} = plan;
 
       const onRemoveMember = (index) => {
-          members.splice(index, 1);
-          this.setState({members})
+          const planKey = this.props.navigation.getParam(PARAM_PLAN_KEY);
+          const removedMember = members.splice(index, 1)[0];
+          DatabaseHelpers.UserData.removePlan(removedMember.uid, planKey)
+          plan.members = members;
+          this.updatePlan();
+          this.setState({plan})
       }
       return (
           <KeyboardAwareScrollView style={{flex:1}}>
               <View style={styles.container}>
                   <RestaurantHeader restaurant={restaurant} />
-                  {this._renderTextInputs()}
-              
+                  {this._renderDetails()}
+                  {this._renderChatPanel()}
                   <PlanMembers 
                       members={members} 
                       onAddPress={this.onAddMembersPress}
                       onRemoveMember={onRemoveMember}/>
+                  {this._renderActionPanel()}
                 
               </View>
           </KeyboardAwareScrollView>
@@ -248,6 +431,7 @@ btnAction:{
     margin:16,
     borderRadius:12,
 }
+
 })
 
 const stylesDatePicker = StyleSheet.create({
