@@ -267,26 +267,69 @@ export class Recommendation {
       static async getLinkedDataForRecommendations(recommendations) {
 
         const retArray = [];
+
+        const promises = [];
+        const restaurantsPromises = [];
+
+        const usersMap = new Map<String, Object>();
+        const restaurantsMap = new Map<String, Object>();
     
         for(var i = 0; i < recommendations.length; i++){
+
+          //feed data fetch v2
           const recommendation = recommendations[i];
-          //get user data
-          let userSnapshot = await firebase
-          .database()
-          .ref(`users/${recommendation.uid}`)
-          .once('value', snapshot1 => {});
-          const user = userSnapshot.val();
+
+          const uid = recommendation.uid;
+          // if(!usersMap.has(uid)){
+            // usersMap.set(uid, null);
+            const userPromise = firebase.database().ref('user')
+            .child(uid)
+            .once("value", null, null);
+            promises.push(userPromise);
+          // }
+
+          const restaurantKey = recommendation.restaurantKey;
+          // if(!restaurantsMap.has(restaurantKey)){
+            // restaurantsMap.set(restaurantKey, null);
+            const restaurantPromise = firebase.database().ref('restaurant')
+            .child(restaurantKey)
+            .once('value', null, null);
+            promises.push(restaurantPromise);
+          // }
+
+          //feed data fetch v1
+          // const recommendation = recommendations[i];
+
+          // //get user data
+          // let userSnapshot = await firebase
+          // .database()
+          // .ref(`users/${recommendation.uid}`)
+          // .once('value', snapshot1 => {});
+          // const user = userSnapshot.val();
     
-          //get resturant data
-          let restaurantSnapshot = await firebase
-          .database()
-          .ref(`restaurant/${recommendation.restaurantKey}`)
-          .once('value', snapshot1 => {});
-          const restaurant = restaurantSnapshot.val();
+          // //get resturant data
+          // let restaurantSnapshot = await firebase
+          // .database()
+          // .ref(`restaurant/${recommendation.restaurantKey}`)
+          // .once('value', snapshot1 => {});
+          // const restaurant = restaurantSnapshot.val();
     
-          recommendation.user = user;
-          recommendation.restaurant = restaurant
+          // recommendation.user = user;
+          // recommendation.restaurant = restaurant
+          // retArray.push(recommendation);
+        }
+
+        const snapshots = await Promise.all(promises);
+        const restaurantSnapshots = await Promise.all(restaurantsPromises);
+
+        for(var i = 0, j = 0; i < recommendations.length; i++, j = j + 2){
+        
+          const recommendation = recommendations[i];
+
+          recommendation.user = snapshots[j].val();
+          recommendation.restaurant = snapshots[j+1].val();
           retArray.push(recommendation);
+
         }
     
         return retArray;

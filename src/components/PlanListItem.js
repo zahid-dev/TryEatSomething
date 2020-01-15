@@ -19,6 +19,7 @@ import * as Values from '../res/Values';
 import RatingStars from '../components/RatingStars';
 import * as Contract from '../firebase/Contract';
 import firebase from 'react-native-firebase';
+import moment from 'moment';
 
 type Props = {
     item:Contract.Plan,
@@ -106,6 +107,9 @@ export default class PlanListItem extends React.Component<Props, State> {
         
         if(!restaurant) return null;
         const imgSource = {uri:(restaurant.photoURL || restaurant.photo)};
+
+        const datetime = moment(item.plannedForTimestamp)
+        const datetimeString = datetime.fromNow();
         
         return (
             <View style={{marginTop:16}}>
@@ -123,7 +127,7 @@ export default class PlanListItem extends React.Component<Props, State> {
                 
                 <View style={styles.waitTimeContainer}>
                     <Text>
-                        {"Wed 12:14"}
+                        {datetimeString}
                     </Text>
                 </View>
             </View>

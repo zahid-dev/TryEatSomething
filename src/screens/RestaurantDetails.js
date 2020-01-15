@@ -195,6 +195,11 @@ class RestaurantDetails extends React.Component {
     this.props.navigation.navigate('Recommend', {restaurant})
   }
 
+  onPlanPress = () => {
+    const restaurant = this.state.restaurant;
+    this.props.navigation.navigate(Values.Screens.SCREEN_MAKE_PLAN, {restaurant})
+  }
+
 
   showDirectionsOnMap = () => {
     const item = this.state.restaurant;
@@ -246,6 +251,13 @@ class RestaurantDetails extends React.Component {
             title={'Recommend'} 
             color={Values.Colors.COLOR_BLACK} 
             onPress={this.onRecommendPress} />
+    
+          <View style={{width:StyleSheet.hairlineWidth, height:'100%', backgroundColor:Values.Colors.COLOR_MID_GRAY}}/>
+          
+          <Button 
+            title={'Plan'} 
+            color={Values.Colors.COLOR_BLACK} 
+            onPress={this.onPlanPress} />
     
           <View style={{width:StyleSheet.hairlineWidth, height:'100%', backgroundColor:Values.Colors.COLOR_MID_GRAY}}/>
     
