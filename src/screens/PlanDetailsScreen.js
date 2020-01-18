@@ -351,6 +351,7 @@ class PlanDetailsScreen extends React.Component<Props, State> {
       const plan = this.state.plan;
       const restaurant = plan.restaurant 
       const {members} = plan;
+      const isCreator = plan.creatorUid === firebase.auth().currentUser.uid;
 
       const onRemoveMember = (index) => {
           const planKey = this.props.navigation.getParam(PARAM_PLAN_KEY);
@@ -367,9 +368,11 @@ class PlanDetailsScreen extends React.Component<Props, State> {
                   {this._renderDetails()}
                   {this._renderChatPanel()}
                   <PlanMembers 
-                      members={members} 
+                      members={members}
                       onAddPress={this.onAddMembersPress}
-                      onRemoveMember={onRemoveMember}/>
+                      onRemoveMember={onRemoveMember}
+                      isCreator={isCreator}/>
+                      
                   {this._renderActionPanel()}
                 
               </View>

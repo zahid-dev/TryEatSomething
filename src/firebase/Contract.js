@@ -34,6 +34,7 @@ export class Plan {
     restaurantKey:string
     restaurant:Restaurant
     priority:number
+    creatorUid:string
     members:Array<PlanMember>
 
     static get PATH_BASE(){return 'plan'}

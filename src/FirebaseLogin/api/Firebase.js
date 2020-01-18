@@ -10,13 +10,16 @@ class Firebase {
           switch (error.code) {
             case 'auth/invalid-email':
               console.warn('Invalid email address format.');
+              alert('Invalid email address format.')
               break;
             case 'auth/user-not-found':
             case 'auth/wrong-password':
               console.warn('Invalid email address or password');
+              alert('Invalid email address or password')
               break;
             default:
               console.warn('Check your internet connection');
+              alert('Check your internet connection');
           }
           resolve(null);
         })
@@ -40,15 +43,19 @@ class Firebase {
           switch (error.code) {
             case 'auth/email-already-in-use':
               console.warn('This email address is already taken');
+              alert('This email address is already taken');
               break;
             case 'auth/invalid-email':
               console.warn('Invalid e-mail address format');
+              alert('Invalid e-mail address format');
               break;
             case 'auth/weak-password':
               console.warn('Password is too weak');
+              alert('Password is too weak');
               break;
             default:
               console.warn('Check your internet connection');
+              alert('Check your internet connection');
           }
           resolve(false);
         })
@@ -86,18 +93,22 @@ class Firebase {
         .sendPasswordResetEmail(email)
         .then(() => {
           console.warn('Email with new password has been sent');
+          alert('Email with new password has been sent');
           resolve(true);
         })
         .catch(error => {
           switch (error.code) {
             case 'auth/invalid-email':
               console.warn('Invalid email address format');
+              alert('Invalid email address format');
               break;
             case 'auth/user-not-found':
               console.warn('User with this email does not exist');
+              alert('User with this email does not exist');
               break;
             default:
               console.warn('Check your internet connection');
+              alert('Check your internet connection');
           }
           resolve(false);
         });

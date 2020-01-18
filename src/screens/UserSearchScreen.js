@@ -9,6 +9,8 @@ import {
     StyleSheet,
     FlatList,
     TextInput,
+    ActivityIndicator,
+    Share,
     Text,
 } from 'react-native';
 import * as Contract from '../firebase/Contract';
@@ -17,6 +19,7 @@ import * as Values from '../res/Values';
 import { 
     Button,
     CheckBox,
+    ButtonGroup,
  } from 'react-native-elements';
 import UserHeader from '../components/UserHeader';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -47,6 +50,8 @@ type Props = {
 
 type State = {
     users:Array<Contract.User>,
+    isLoading:boolean,
+    query:string,
     selectedMembersMap:Map<string, Contract.PlanMember>
 }
 
@@ -54,7 +59,8 @@ export default class UserSearchScreen extends React.Component<Props, State> {
 
     state = {
         users:[],
-        selectedMembersMap:new Map<string, Contract.PlanMember>()
+        selectedMembersMap:new Map<string, Contract.PlanMember>(),
+        isLoading:false
     }
 
     static navigationOptions = (args:any) => {
@@ -132,12 +138,13 @@ export default class UserSearchScreen extends React.Component<Props, State> {
     }
 
     fetchUsers(query:string = ''){
+        this.setState({isLoading:true, query})
         const onResponse = (users:Array<Contract.User>) => {
-            this.setState({users})
+            this.setState({users, isLoading:false})
         }
 
         const onReject = (error:Error) => {
-
+            this.setState({isLoading:false})
         }
 
         if(query){
@@ -145,6 +152,7 @@ export default class UserSearchScreen extends React.Component<Props, State> {
             .then(onResponse)
             .catch(onReject)
         }else{
+            this.setState({users:[]})
             DatabaseHelpers.UserData.fetchFollowers()
             .then(onResponse)
             .catch(onReject)
@@ -167,6 +175,28 @@ export default class UserSearchScreen extends React.Component<Props, State> {
         }
         this.setState({selectedMembersMap:membersMap})
     }
+
+    onPressInviteContacts = async () => {
+        try {
+            const result = await Share.share({
+            message:
+                "Hey,\n\nUse the link below to download EatSnP app.\nhttps://eatsnp.page.link/install\n\nIt's realy great for sharing and planning your food experiences, let me know when you are done and let's plan something together."
+            });
+    
+            if (result.action === Share.sharedAction) {
+            if (result.activityType) {
+                // shared with activity type of result.activityType
+            } else {
+                // shared
+            }
+            } else if (result.action === Share.dismissedAction) {
+            // dismissed
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+    
 
     _renderItem = (args) => {
         const user:Contract.User = args.item;
@@ -191,6 +221,33 @@ export default class UserSearchScreen extends React.Component<Props, State> {
         )
     }
 
+    _renderListFooter = () => {
+        const {isLoading, users, query} = this.state;
+        const statusText = query?
+        "No users found for your query":"Seems you do not have followers yet, try searching for users instead or"
+
+        if(isLoading){
+            return (
+                <View>
+                    <ActivityIndicator style={{marginTop:56}} animating={true} size='large' />
+                </View>
+            )
+        }
+        return (
+            <View>
+                {!users.length &&
+                    <Text style={styles.statusText}>{statusText}</Text>
+                }
+                <Button 
+                    title={"Invite From Contacts"}
+                    type={"clear"}
+                    color={Values.Colors.COLOR_PRIMARY}
+                    onPress={this.onPressInviteContacts}
+                />
+            </View>
+        )
+    }
+
     render(){
         const users = this.state.users
         return (
@@ -200,6 +257,7 @@ export default class UserSearchScreen extends React.Component<Props, State> {
                     renderItem={this._renderItem}
                     keyExtractor={item=>item.uid}
                     extraData={this.state}
+                    ListFooterComponent={this._renderListFooter}
                 />
             </View>
         )
@@ -214,5 +272,13 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         padding:16,
         justifyContent:'space-between'
+    },
+    statusText:{
+        marginTop:56,
+        fontSize:18,
+        fontWeight:'600',
+        textAlign:'center',
+        color:Values.Colors.COLOR_GRAY,
+
     }
 })

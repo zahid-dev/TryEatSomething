@@ -257,8 +257,10 @@ export class Recommendation {
         const recommendations = [];
         snapshotsArray.forEach((recommendationSnap) => {
           const recommendation = recommendationSnap.val();
-          recommendation.key = recommendationSnap.key;
-          recommendations.push(recommendation);
+          if(recommendation){
+            recommendation.key = recommendationSnap.key;
+            recommendations.push(recommendation);
+          }
         });
     
         return Recommendation.getLinkedDataForRecommendations(recommendations);
@@ -564,7 +566,12 @@ export class UserData {
 
             Promise.all(promises)
             .then(users => resolve(users))
-            .catch(err=>console.warn("Failed to fetch users using follower ids"))
+            .catch((err)=>{
+              console.warn("Failed to fetch users using follower ids");
+              reject(err)
+            })
+          }else{
+            reject(new Error("User has no followers"))
           }
         },(error)=>{
 
@@ -768,8 +775,10 @@ export class Feed {
     const recommendations = [];
     recommendationSnaps.forEach((childSnap)=>{
       const recommendation = childSnap.val();
-      recommendation.key = childSnap.key;
-      recommendations.push(recommendation)
+      if(recommendation){
+        recommendation.key = childSnap.key;
+        recommendations.push(recommendation)
+      }
     }) 
     //console.warn(allrecommendations);
     return Recommendation.getLinkedDataForRecommendations(recommendations);

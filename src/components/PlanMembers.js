@@ -17,12 +17,14 @@ import {
 import * as Values from '../res/Values';
 import { FlatList, TextInput } from 'react-native-gesture-handler';
 import * as Contract from '../firebase/Contract';
+import firebase from 'react-native-firebase';
 
 
 type Props = {
     members:Array<Contract.PlanMember>,
     onAddPress:()=>void,
-    onRemoveMember:(number)=>void
+    onRemoveMember:(number)=>void,
+    isCreator:boolean,
 }
 
 type State = {
@@ -33,11 +35,14 @@ type State = {
 export default class PlanMembers extends React.Component<Props, State> {
 
     _renderItem=(args)=>{
+        const isCreator = this.props.isCreator;
         const member:Contract.PlanMember = args.item;
         const removeMember = () => {
             console.log("Remove member:  " + member.uid + " at index: " + args.index)
             this.props.onRemoveMember(args.index);
         }
+
+        const isInvitedUser = isCreator && (member.uid !== firebase.auth().currentUser.uid);
 
         return (
             <View style={{flexDirection:'row', flex:1}}>
@@ -54,12 +59,15 @@ export default class PlanMembers extends React.Component<Props, State> {
                         </Text>
                     </View>
                 </View>
-                <Button 
-                    title="X"
-                    type='clear'
-                    titleStyle={{color:Values.Colors.COLOR_BLACK}}
-                    onPress={removeMember}
-                />
+
+                {isCreator && isInvitedUser &&
+                    <Button 
+                        title="X"
+                        type='clear'
+                        titleStyle={{color:Values.Colors.COLOR_BLACK}}
+                        onPress={removeMember}
+                    />
+                }
             </View>
         )
     }

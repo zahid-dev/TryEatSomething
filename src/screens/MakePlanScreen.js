@@ -84,6 +84,7 @@ export default class MakePlanScreen extends React.Component<Props, State> {
     createPlan = () => {
         const restaurant = this.props.navigation.getParam(PARAM_RESTAURANT);
         const {members, date, time, description, title} = this.state
+        const creatorUid = firebase.auth().currentUser.uid
       
         if((members.length?true:false) && date && time && title){
             //send data to database
@@ -100,6 +101,7 @@ export default class MakePlanScreen extends React.Component<Props, State> {
             plan.restaurant = restaurant;
             plan.restaurantKey = restaurant.key;
             plan.description = description;
+            plan.creatorUid = creatorUid;
             plan.members = members;
             plan.plannedForTimestamp = plannedForMoment.valueOf();
             plan.priority = -plan.plannedForTimestamp;
@@ -216,16 +218,18 @@ export default class MakePlanScreen extends React.Component<Props, State> {
             members.splice(index, 1);
             this.setState({members})
         }
+        
         return (
             <KeyboardAwareScrollView style={{flex:1}}>
                 <View style={styles.container}>
                     <RestaurantHeader restaurant={restaurant} />
                     {this._renderTextInputs()}
                     {this._renderPickers()}
-                    <PlanMembers 
+                    <PlanMembers  
                         members={members} 
                         onAddPress={this.onAddMembersPress}
-                        onRemoveMember={onRemoveMember}/>
+                        onRemoveMember={onRemoveMember}
+                        isCreator={true}/>
                     {this._renderActionPanel()}
                 </View>
             </KeyboardAwareScrollView>
