@@ -284,7 +284,7 @@ export class Recommendation {
           const uid = recommendation.uid;
           // if(!usersMap.has(uid)){
             // usersMap.set(uid, null);
-            const userPromise = firebase.database().ref('user')
+            const userPromise = firebase.database().ref(Contract.User.PATH_BASE)
             .child(uid)
             .once("value", null, null);
             promises.push(userPromise);
@@ -293,7 +293,7 @@ export class Recommendation {
           const restaurantKey = recommendation.restaurantKey;
           // if(!restaurantsMap.has(restaurantKey)){
             // restaurantsMap.set(restaurantKey, null);
-            const restaurantPromise = firebase.database().ref('restaurant')
+            const restaurantPromise = firebase.database().ref(Contract.Restaurant.PATH_BASE)
             .child(restaurantKey)
             .once('value', null, null);
             promises.push(restaurantPromise);

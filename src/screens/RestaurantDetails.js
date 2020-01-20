@@ -157,10 +157,12 @@ class RestaurantDetails extends React.Component {
               //return snapshot1;
             });
           console.warn('name', userDetails.val().Name);
+          
           obj = {
             priority: item.val().priority,
             description: item.val().description,
             name: userDetails.val().Name,
+            uid: item.val().uid,
           };
           //console.warn(obj);
           return obj;
@@ -198,6 +200,11 @@ class RestaurantDetails extends React.Component {
   onPlanPress = () => {
     const restaurant = this.state.restaurant;
     this.props.navigation.navigate(Values.Screens.SCREEN_MAKE_PLAN, {restaurant})
+  }
+
+  showProfile(uid:string){
+    console.log("Opening user profile: " + uid);
+    this.props.navigation.navigate(Values.Screens.SCREEN_PROFILE, {uid});
   }
 
 
@@ -298,10 +305,12 @@ class RestaurantDetails extends React.Component {
         style={{flex: 1}}
         data={DatArray}
         renderItem={({item, index}) => (
-          <View style={styles.subContainer}>
-            <Text style={styles.recommendTextTitle}>{item.name}</Text>
-            <Text style={styles.recommendText}>{item.description}</Text>
-          </View>
+          <TouchableOpacity onPress={()=>{this.showProfile(item.uid)}} >
+            <View style={styles.subContainer}>
+              <Text style={styles.recommendTextTitle}>{item.name}</Text>
+              <Text style={styles.recommendText}>{item.description}</Text>
+            </View>
+          </TouchableOpacity>
         )}
         keyExtractor={DatumArray => DatumArray}
       />

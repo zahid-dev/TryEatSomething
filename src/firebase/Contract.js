@@ -4,7 +4,7 @@
 */
 
 export class Restaurant {
-
+    static get PATH_BASE(){return 'restaurant'}
 }
 
 export class User {

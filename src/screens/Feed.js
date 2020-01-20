@@ -77,7 +77,7 @@ class Feed extends React.Component {
 
 
   showUserProfile = (uid) => {
-    this.props.navigation.navigate('Profile', {uid});
+    this.props.navigation.navigate(Values.Screens.SCREEN_PROFILE, {uid});
   }
 
   showRestaurantDetails = (restaurantKey) => {
