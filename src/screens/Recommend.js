@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {withNavigation} from 'react-navigation';
 import axios from 'axios';
-import firebase from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
 import * as Values from '../res/Values';
 import * as DatabaseHelpers from '../firebase/DatabaseHelpers';
 import RatePanel from '../components/RatePanel';

@@ -12,7 +12,7 @@ import {
   Linking,
 } from 'react-native';
 import {withNavigation} from 'react-navigation';
-import firebase from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
 import axios from 'axios';
 import * as Values from '../res/Values';
 import RestaurantMenu from '../components/RestaurantMenu';

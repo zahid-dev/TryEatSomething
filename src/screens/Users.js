@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
-import firebase from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
 import {Card, CardSection} from '../components/common';
 import {withNavigation} from 'react-navigation';
 import axios from 'axios';

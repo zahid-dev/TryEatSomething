@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "642741661650",
+    "firebase_url": "https://eatsnp.firebaseio.com",
+    "project_id": "eatsnp",
+    "storage_bucket": "eatsnp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642741661650:android:9f5b313bd0e94b558a220b",
+        "android_client_info": {
+          "package_name": "com.eatsnp.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "642741661650-8ih8fnougekggqdn267jt8gfc8crvca0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLzqSDicKViQyMFLrAQ3-VBSJay2pd4I4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "642741661650-8ih8fnougekggqdn267jt8gfc8crvca0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "642741661650-t21li3mls4ufk1la66a3t3b8jtb382s5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.eatsnp.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -14,7 +14,7 @@ import {
   TouchableWithoutFeedback,
   ActivityIndicator,
 } from 'react-native';
-import firebase, { Firebase } from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
 import {Card, CardSection} from '../components/common';
 import {withNavigation} from 'react-navigation';
 import * as Contract from '../firebase/Contract';

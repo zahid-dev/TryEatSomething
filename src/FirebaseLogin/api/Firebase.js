@@ -1,4 +1,4 @@
-import firebase from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
 
 class Firebase {
   userLogin = (email, password) => {

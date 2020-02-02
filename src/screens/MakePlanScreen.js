@@ -19,7 +19,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
 import DatePicker from 'react-native-datepicker';
 import { Button } from 'react-native-elements'
 import moment from 'moment';
-import firebase from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
 
 const PARAM_RESTAURANT = "restaurant";
 

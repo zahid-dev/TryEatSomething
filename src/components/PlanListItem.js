@@ -18,7 +18,7 @@ import {Button} from 'react-native-elements';
 import * as Values from '../res/Values';
 import RatingStars from '../components/RatingStars';
 import * as Contract from '../firebase/Contract';
-import firebase from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
 import moment from 'moment';
 
 type Props = {

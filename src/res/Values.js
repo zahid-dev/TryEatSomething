@@ -1,6 +1,11 @@
 
 export class Strings {
+  static get ANDROID_PACKAGE_NAME(){return 'com.eatsnp.app'}
+  static get IOS_BUNDLE_ID(){return 'com.eatsnp.app'}
   static get PLACEHOLDER_IMAGE_URL(){return 'https://platerate.com/images/tempfoodnotext.png'}
+  static get DYNAMIC_LINK_PREFIX(){return 'eatsnp.page.link'}
+  static get DYNAMIC_LINK_URI_PREFIX(){return `https://${this.DYNAMIC_LINK_PREFIX}`}
+  static get DYNAMIC_LINK_PLAN_URL(){return `${this.DYNAMIC_LINK_URI_PREFIX}/plan`}
 }
 
 export class Images {

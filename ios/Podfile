@@ -37,25 +37,6 @@ target 'TryEatSomething' do
   pod 'react-native-geolocation', path: '../node_modules/@react-native-community/geolocation'
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
-  
-  pod 'Firebase/Analytics'
-  pod 'Firebase/Auth'
-  pod 'Firebase/Database'
-
-  target 'TryEatSomethingTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
 
   use_native_modules!
-end
-
-target 'TryEatSomething-tvOS' do
-  # Pods for TryEatSomething-tvOS
-
-  target 'TryEatSomething-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
 end

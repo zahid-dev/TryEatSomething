@@ -17,7 +17,7 @@ import {
 import * as Values from '../res/Values';
 import { FlatList, TextInput } from 'react-native-gesture-handler';
 import * as Contract from '../firebase/Contract';
-import firebase from 'react-native-firebase';
+import firebase from '@react-native-firebase/app';
 
 
 type Props = {

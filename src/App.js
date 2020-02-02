@@ -14,8 +14,13 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
+
+import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/auth';
+import '@react-native-firebase/database';
+import '@react-native-firebase/dynamic-links';
+
 import FirebaseLogin from './FirebaseLogin';
-import firebase from 'react-native-firebase';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import {
@@ -198,6 +203,30 @@ const styles = StyleSheet.create({
 const AppContainer = createAppContainer(RootStack);
 
 export default class App extends Component {
+
+  constructor(props){
+    super(props)
+    this.bootstrapApp();
+  }
+
+  async bootstrapApp() {
+    try{
+      const initialLink = await firebase.dynamicLinks().getInitialLink();
+  
+      if (initialLink) {
+        console.log("Received Link: " + JSON.stringify(initialLink, null, '\t'));
+        alert("Received Link: " + JSON.stringify(initialLink, null, '\t'));
+        if (initialLink.url === Values.Strings.DYNAMIC_LINK_URI_PREFIX) {
+          // ... navigate to your offers page?
+          
+        }
+      }
+    }
+    catch(err){
+      console.warn("Failed to get dynamic link that opened the app");
+    }
+  }
+
   render() {
     return <AppContainer />;
   }

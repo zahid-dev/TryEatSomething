@@ -3,7 +3,7 @@
 @flow
 */
 
-import firebase from 'react-native-firebase'
+import firebase from '@react-native-firebase/app'
 import * as Contract from '../firebase/Contract'
 
 
@@ -286,7 +286,7 @@ export class Recommendation {
             // usersMap.set(uid, null);
             const userPromise = firebase.database().ref(Contract.User.PATH_BASE)
             .child(uid)
-            .once("value", null, null);
+            .once("value");
             promises.push(userPromise);
           // }
 
@@ -295,7 +295,7 @@ export class Recommendation {
             // restaurantsMap.set(restaurantKey, null);
             const restaurantPromise = firebase.database().ref(Contract.Restaurant.PATH_BASE)
             .child(restaurantKey)
-            .once('value', null, null);
+            .once('value');
             promises.push(restaurantPromise);
           // }
 
@@ -768,9 +768,7 @@ export class Feed {
       .database()
       .ref('recommendations')
       .orderByChild('priority')
-      .once('value', snapshot => {
-        return snapshot;
-      });
+      .once('value');
 
     const recommendations = [];
     recommendationSnaps.forEach((childSnap)=>{

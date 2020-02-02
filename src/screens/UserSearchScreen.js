@@ -23,6 +23,8 @@ import {
  } from 'react-native-elements';
 import UserHeader from '../components/UserHeader';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import firebase from '@react-native-firebase/app';
+import { values } from 'underscore';
 
 
 const PARAM_ON_MEMBERS_SELECTED = "onMembersSelected";
@@ -178,9 +180,21 @@ export default class UserSearchScreen extends React.Component<Props, State> {
 
     onPressInviteContacts = async () => {
         try {
+            const link = await firebase.dynamicLinks().buildShortLink({
+                link:`${Values.Strings.DYNAMIC_LINK_PLAN_URL}/planKeyGoesHere`,
+                domainUriPrefix:Values.Strings.DYNAMIC_LINK_URI_PREFIX,
+                android:{
+                    packageName:Values.Strings.ANDROID_PACKAGE_NAME
+                },
+                ios:{
+                    bundleId:Values.Strings.IOS_BUNDLE_ID
+                },
+            }, 'UNGUESSABLE');
+
+            
             const result = await Share.share({
             message:
-                "Hey,\n\nUse the link below to download EatSnP app.\nhttps://eatsnp.page.link/install\n\nIt's realy great for sharing and planning your food experiences, let me know when you are done and let's plan something together."
+                `Hey,\n\nUse the link below to download EatSnP app.\n${link}\n\nIt's realy great for sharing and planning your food experiences, let me know when you are done and let's plan something together.`
             });
     
             if (result.action === Share.sharedAction) {
