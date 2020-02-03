@@ -78,11 +78,36 @@ class PlanDetailsScreen extends React.Component<Props, State> {
 
   planCallbackListener = (plan) => {
     var thisMemberStatus = Contract.STATUS_PENDING;
+    var isNewInvite = true;
     plan.members.forEach(member=>{
       if(member.uid === firebase.auth().currentUser.uid){
         thisMemberStatus = member.status;
+        isNewInvite = false;
       }
     })
+
+    if(isNewInvite){
+      //add member to plan with status pending
+      const uid = firebase.auth().currentUser.uid;
+      DatabaseHelpers.User.getUser(uid)
+        .then((user)=>{
+          if(user){
+            const member = new Contract.PlanMember();
+            member.uid = uid;
+            member.name = user.Name;
+            member.status = Contract.PlanMember.STATUS_PENDING;
+            plan.members.push(member);
+            DatabaseHelpers.Plan.updatePlan(plan.key, plan)
+            .then((status)=>{
+              if(status){
+                console.log("Successfully updated plan with new member")
+              }
+            })
+          }
+        })
+     
+    }
+
     this.setState({plan, isLoading:false, thisMemberStatus, prevPlan:Object.assign({}, plan)})
   }
 
@@ -123,16 +148,12 @@ class PlanDetailsScreen extends React.Component<Props, State> {
 
 
   onAddMembersPress = () => {
-    const params = {
-        selectedMembers:this.state.plan.members,
-        onMembersSelected:(members)=>{
-            this.setState(state=>{
-              state.plan.members = members;
-              return state;
-            })
-        }
+    const {navigation} = this.props;
+    const params = { 
+        planKey:navigation.getParam(PARAM_PLAN_KEY)
     }
-    this.props.navigation.navigate(Values.Screens.SCREEN_USER_SEARCH, params)
+
+    this.props.navigation.navigate(Values.Screens.SCREEN_INVITE_CONTACTS, params)
   }
 
 
@@ -414,14 +435,16 @@ contentContainer:{
     position: 'relative',
 },
 titleText:{
+    height:40,
     fontSize: 20,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     color:Values.Colors.COLOR_BLACK,
-    fontWeight:'600'
+    fontWeight:'700'
 },
-descriptionText:{
 
+descriptionText:{
+    
     fontSize: 20,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',

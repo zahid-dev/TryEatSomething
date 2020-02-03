@@ -646,6 +646,10 @@ export class UserData {
 
 export class Plan {
 
+  static initPlanKey(){
+    return firebase.database().ref().push().key;
+  }
+
   static getPlan(planKey:string):Promise<Contract.Plan>{
     return new Promise((resolve, reject)=>{
       console.log("Fetching plan for key: " + planKey)
@@ -698,11 +702,11 @@ export class Plan {
   }
 
 
-  static createPlan(plan:Contract.Plan):Promise<boolean>{
+  static createPlan(planKey:string, plan:Contract.Plan):Promise<boolean>{
     return new Promise((resolve, reject)=>{
       //set plan in fireabse
-      const ref = firebase.database().ref(Contract.Plan.PATH_BASE).push()
-      const planKey = ref.key;
+      const ref = firebase.database().ref(Contract.Plan.PATH_BASE).child(planKey)
+      // const planKey = ref.key;
 
       ref.set(plan, (err)=>{
         if(!err){

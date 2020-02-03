@@ -82,7 +82,7 @@ export default class PlanMembers extends React.Component<Props, State> {
                     renderItem={this._renderItem}
                 />
                 <Button 
-                    title={"+ Add Members"} 
+                    title={"+ Invite More"} 
                     type={'clear'}
                     titleStyle={styles.btnTitleStyle}
                     buttonStyle={styles.btnAddWrapperStyle}

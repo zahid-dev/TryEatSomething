@@ -24,7 +24,7 @@ import {
 import UserHeader from '../components/UserHeader';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import firebase from '@react-native-firebase/app';
-import { values } from 'underscore';
+
 
 
 const PARAM_ON_MEMBERS_SELECTED = "onMembersSelected";
@@ -194,7 +194,7 @@ export default class UserSearchScreen extends React.Component<Props, State> {
             
             const result = await Share.share({
             message:
-                `Hey,\n\nUse the link below to download EatSnP app.\n${link}\n\nIt's realy great for sharing and planning your food experiences, let me know when you are done and let's plan something together.`
+                `Hey,\n\nI have created a plan on EatSnP app, use the link below to see the invite.\n${link}\n\nEatSnP is realy great for sharing and planning your food experiences.`
             });
     
             if (result.action === Share.sharedAction) {

@@ -37,6 +37,9 @@ target 'TryEatSomething' do
   pod 'react-native-geolocation', path: '../node_modules/@react-native-community/geolocation'
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+  pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
 
   use_native_modules!
+  pod 'react-native-sms', :path => '../node_modules/react-native-sms'
+
 end

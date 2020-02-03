@@ -37,6 +37,7 @@ import Plans from './screens/Plans';
 import PlanDetailsScreen from './screens/PlanDetailsScreen';
 import MakePlanScreen from './screens/MakePlanScreen';
 import UserSearchScreen from './screens/UserSearchScreen';
+import InviteContactsScreen from './screens/InviteContactsScreen';
 import Profile from './screens/Profile';
 import * as Values from './res/Values';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -92,6 +93,7 @@ const RestaurantNavigator = createStackNavigator(
     Restaurants: {screen: Restaurants},
     RestaurantDetails: {screen: RestaurantDetails},
     Recommend: {screen: Recommend},
+    InviteContacts:{screen:InviteContactsScreen},
     MakePlan:{screen:MakePlanScreen},
     UserSearch:{screen:UserSearchScreen}
 
@@ -108,6 +110,7 @@ const FeedNavigator = createStackNavigator(
     RestaurantDetails: {screen: RestaurantDetails},
     Recommend:{screen:Recommend},
     MakePlan:{screen:MakePlanScreen},
+    InviteContacts:{screen:InviteContactsScreen},
     UserSearch:{screen:UserSearchScreen}
 
   },
@@ -120,7 +123,8 @@ const FeedNavigator = createStackNavigator(
 const PlansNavigator = createStackNavigator({
   Plans:{screen:Plans},
   PlanDetails:{screen:PlanDetailsScreen},
-  UserSearch:{screen:UserSearchScreen}
+  UserSearch:{screen:UserSearchScreen},
+  InviteContacts:{screen:InviteContactsScreen},
 })
 
 const ProfileNavigator = createStackNavigator(
@@ -206,25 +210,6 @@ export default class App extends Component {
 
   constructor(props){
     super(props)
-    this.bootstrapApp();
-  }
-
-  async bootstrapApp() {
-    try{
-      const initialLink = await firebase.dynamicLinks().getInitialLink();
-  
-      if (initialLink) {
-        console.log("Received Link: " + JSON.stringify(initialLink, null, '\t'));
-        alert("Received Link: " + JSON.stringify(initialLink, null, '\t'));
-        if (initialLink.url === Values.Strings.DYNAMIC_LINK_URI_PREFIX) {
-          // ... navigate to your offers page?
-          
-        }
-      }
-    }
-    catch(err){
-      console.warn("Failed to get dynamic link that opened the app");
-    }
   }
 
   render() {

@@ -46,6 +46,10 @@ class Feed extends React.Component {
     isLoading:false,
   };
 
+  constructor(props){
+    super(props)
+    this.bootstrapApp();
+  }
 
   componentDidMount() {
     this.getGlobalFeed();
@@ -56,6 +60,30 @@ class Feed extends React.Component {
 
   componentWillUnmount(){
     DeviceEventEmitter.removeListener('REFRESH_FEED');
+  }
+
+  async bootstrapApp() {
+    try{
+      const initialLink = await firebase.dynamicLinks().getInitialLink();
+  
+      if (initialLink) {
+        console.log("Received Link: " + JSON.stringify(initialLink, null, '\t'));
+        
+        const url = initialLink.url;
+        if(url.startsWith(Values.Strings.DYNAMIC_LINK_URI_PREFIX)){
+          if (url.startsWith(Values.Strings.DYNAMIC_LINK_PLAN_URL)) {
+            //process plan invitation
+            const planKey = url.substring(url.lastIndexOf('/')+1, url.length);
+            console.log("dynamic linked plan key: " + planKey)
+            this.props.navigation.navigate(Values.Screens.SCREEN_PLAN_DETAILS, {planKey})
+          }
+        }
+       
+      }
+    }
+    catch(err){
+      console.warn("Failed to get dynamic link that opened the app");
+    }
   }
 
   getGlobalFeed(){

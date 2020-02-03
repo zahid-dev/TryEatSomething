@@ -42,6 +42,7 @@ type State = {
     title:string,
     date:string,
     time:string,
+    planKey:string,
     members:Array<Contract.PlanMember>
 }
 
@@ -56,11 +57,13 @@ export default class MakePlanScreen extends React.Component<Props, State> {
         title:'',
         date:'',
         time:'',
+        planKey:'',
         members:[]
     }
 
     componentDidMount(){
-        this.fetchUser()
+        this.fetchUser();
+        this.initPlanKey();
     }
 
     fetchUser(){
@@ -81,12 +84,18 @@ export default class MakePlanScreen extends React.Component<Props, State> {
 
     }
 
+    initPlanKey(){
+        const planKey = DatabaseHelpers.Plan.initPlanKey();
+        console.log("Plan key returned: " + planKey)
+        this.setState({planKey});
+    }
+
     createPlan = () => {
         const restaurant = this.props.navigation.getParam(PARAM_RESTAURANT);
-        const {members, date, time, description, title} = this.state
+        const {members, date, time, description, title, planKey} = this.state
         const creatorUid = firebase.auth().currentUser.uid
       
-        if((members.length?true:false) && date && time && title){
+        if(date && time && title){
             //send data to database
             const plannedForMoment = moment(`${date} - ${time}`, 'Do MMM - hh:mm A');
             const timestamp = plannedForMoment.valueOf();
@@ -107,11 +116,18 @@ export default class MakePlanScreen extends React.Component<Props, State> {
             plan.priority = -plan.plannedForTimestamp;
             plan.createdAtTimestamp = createdAt
 
-            DatabaseHelpers.Plan.createPlan(plan)
+            DatabaseHelpers.Plan.createPlan(planKey, plan)
                 .then(status=>{
                     if(status){
-                        alert("Plan created successfully")
-                        this.props.navigation.goBack();
+                        // alert("Plan created successfully")
+                        // this.props.navigation.goBack();
+                        const {navigation} = this.props;
+                        navigation.navigate(
+                            Values.Screens.SCREEN_INVITE_CONTACTS, 
+                            {
+                                planKey,
+                                homeScreenKey:navigation.state.key
+                            })
                     }
                 })
                 .catch(err=>{
@@ -204,7 +220,7 @@ export default class MakePlanScreen extends React.Component<Props, State> {
     _renderActionPanel(){
         return (
             <Button 
-                title="Create New Plan"
+                title="Create and Invite Members"
                 buttonStyle={styles.btnAction}
                 onPress={this.createPlan}
             />
@@ -225,11 +241,11 @@ export default class MakePlanScreen extends React.Component<Props, State> {
                     <RestaurantHeader restaurant={restaurant} />
                     {this._renderTextInputs()}
                     {this._renderPickers()}
-                    <PlanMembers  
+                    {/* <PlanMembers  
                         members={members} 
                         onAddPress={this.onAddMembersPress}
                         onRemoveMember={onRemoveMember}
-                        isCreator={true}/>
+                        isCreator={true}/> */}
                     {this._renderActionPanel()}
                 </View>
             </KeyboardAwareScrollView>
@@ -252,6 +268,7 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     titleText:{
+        height:40,
         fontSize: 20,
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
@@ -259,7 +276,7 @@ const styles = StyleSheet.create({
         fontWeight:'600'
     },
     descriptionText:{
-        height: 80,
+        height: 40,
         fontSize: 20,
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
