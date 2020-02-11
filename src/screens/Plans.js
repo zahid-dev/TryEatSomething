@@ -94,13 +94,16 @@ class Plans extends React.Component {
     return (
       <View style={styles.container}>
         {
-          plans.length?
+          !plans.length?
             <FlatList 
               data={this.state.plans}
               renderItem={this._renderItem}
             />
             :
-            <Text>No Plans Found</Text>
+            <View style={styles.loadingPlaceholder}>
+              <Text style={styles.textPlaceholder}>No Plans Found</Text>
+            </View>
+            
         }
      
       </View>
@@ -118,7 +121,12 @@ const styles = StyleSheet.create({
   },
   loadingPlaceholder:{
     flex:1,
-    justifyContent:'center',
-    marginTop:56
+    alignItems:'center',
+    marginTop:128
+  },
+  textPlaceholder:{
+    fontSize:18,
+    fontWeight:'600',
+    color:Values.Colors.COLOR_GRAY
   }
 })

@@ -104,7 +104,6 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
         return {
             headerTitle:_renderSearchBar(),
             headerRight,
-            headerBackTitle: null
         }
     }
 
@@ -164,6 +163,12 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
           this.setState({isLoading:false})
         } else {
           // contacts returned in Array
+          contacts = contacts.map((contact)=>{
+            if(!contact.displayName){
+                contact.displayName = `${contact.givenName}${contact.middleName?" ":""}${contact.middleName} ${contact.familyName}`
+            }
+            return contact
+          })
           contacts = contacts.sort((a, b)=>{
             const nameA = a.displayName
             const nameB = b.displayName;
@@ -354,7 +359,7 @@ const styles = StyleSheet.create({
     textName:{
         flex:1,
         fontSize:18,
-        fontWeight:'600'
+        fontWeight:'600',
     },
     btnAction:{
         backgroundColor:Values.Colors.COLOR_PRIMARY,

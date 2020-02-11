@@ -63,7 +63,8 @@ class PlanDetailsScreen extends React.Component<Props, State> {
 
   static navigationOptions = ({navigation}) => {
     return {
-      headerTitle:"Details"
+      headerTitle:"Details",
+
     }
   }
 
@@ -267,7 +268,7 @@ class PlanDetailsScreen extends React.Component<Props, State> {
               <TextInput
                   style={styles.titleText}
                   underlineColorAndroid="transparent"
-                  placeholder="Plan Title"
+                  placeholder="Add Title"
                   placeholderTextColor="grey"
                   numberOfLines={31}
                   maxLength={30}
@@ -278,7 +279,7 @@ class PlanDetailsScreen extends React.Component<Props, State> {
               <TextInput
                   style={styles.descriptionText}
                   underlineColorAndroid="transparent"
-                  placeholder="Plan Description"
+                  placeholder="Add Description"
                   placeholderTextColor="grey"
            
                   maxLength={90}
@@ -440,7 +441,9 @@ titleText:{
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     color:Values.Colors.COLOR_BLACK,
-    fontWeight:'700'
+    fontWeight:'700',
+    borderColor:Values.Colors.COLOR_GRAY,
+    borderBottomWidth:StyleSheet.hairlineWidth,
 },
 
 descriptionText:{

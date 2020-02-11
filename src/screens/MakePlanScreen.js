@@ -49,7 +49,8 @@ type State = {
 export default class MakePlanScreen extends React.Component<Props, State> {
 
     static navigationOptions = {
-        title:"Make Plan"
+        title:"Make Plan",
+        headerBackTitle:"Details"
     }
 
     state = {
@@ -155,7 +156,7 @@ export default class MakePlanScreen extends React.Component<Props, State> {
                 <TextInput
                     style={styles.titleText}
                     underlineColorAndroid="transparent"
-                    placeholder="Plan Title"
+                    placeholder="Add Title"
                     placeholderTextColor="grey"
                     numberOfLines={31}
                     maxLength={30}
@@ -166,7 +167,7 @@ export default class MakePlanScreen extends React.Component<Props, State> {
                 <TextInput
                     style={styles.descriptionText}
                     underlineColorAndroid="transparent"
-                    placeholder="Plan Description"
+                    placeholder="Add Description"
                     placeholderTextColor="grey"
                     numberOfLines={3}
                     maxLength={90}
@@ -273,7 +274,9 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         color:Values.Colors.COLOR_BLACK,
-        fontWeight:'600'
+        fontWeight:'600',
+        borderColor:Values.Colors.COLOR_GRAY,
+        borderBottomWidth:StyleSheet.hairlineWidth,
     },
     descriptionText:{
         height: 40,
