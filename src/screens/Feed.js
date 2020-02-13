@@ -62,6 +62,16 @@ class Feed extends React.Component {
     DeviceEventEmitter.removeListener('REFRESH_FEED');
   }
 
+  async requestMessagingPermission(){
+    const granted = firebase.messaging().requestPermission();
+ 
+    if (granted) {
+      console.log('User granted messaging permissions!');
+    } else {
+      console.log('User declined messaging permissions :(');
+    }
+  }
+
   async bootstrapApp() {
     try{
       const initialLink = await firebase.dynamicLinks().getInitialLink();

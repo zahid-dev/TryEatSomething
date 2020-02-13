@@ -875,6 +875,10 @@
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/dynamic-links/-/dynamic-links-6.2.0.tgz#f7d4e8b52fc3e1528eaf964d444d929034b5763a"
 
+"@react-native-firebase/messaging@^6.2.0":
+  version "6.3.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-6.3.2.tgz#052c799c4a1696b65ceeaf76600399a798c1f3a5"
+
 "@react-navigation/core@^3.5.2":
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.5.2.tgz#3a3d147b8419e5839e0f2ad4dea086bd2d307fe3"

@@ -32,12 +32,18 @@ import Contacts from 'react-native-contacts';
 import SendSMS from 'react-native-sms'
 
 const PARAM_PLAN_KEY = "planKey";
+const PARAM_HOST_NAME = "hostName";
+const PARAM_DATE_TIME_STRING = "dateTimeString";
+const PARAM_RESTAURANT_NAME = "restaurantName";
 const PARAM_ON_DONE_PRESS = "onDonePress";
 const PARAM_UPDATE_SEARCH = "updateSearch";
 const PARAM_HOME_SCREEN_KEY = "homeScreenKey";
 
 type Params = {
     planKey:string,
+    restaurantName:string,
+    hostName:string,
+    dateTimeString:string,
 }
 
 type Navigation = {
@@ -60,6 +66,9 @@ type State = {
     processedContacts:boolean,
     linkCopied:boolean,
     planKey:string,
+    hostName:string,
+    restaurantName:string,
+    dateTimeString:string,
 }
 
 export default class InviteContactsScreen extends React.Component<Props, State> {
@@ -71,6 +80,10 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
         planKey:'',
         linkCopied:false,
         processedContacts:false,
+        planKey:'',
+        hostName:'',
+        restaurantName:'',
+        dateTimeString:'',
     }
 
     static navigationOptions = (args:any) => {
@@ -135,7 +148,10 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
 
     componentDidMount(){
         const planKey = this.props.navigation.getParam(PARAM_PLAN_KEY);
-        this.setState({planKey})
+        const restaurantName = this.props.navigation.getParam(PARAM_RESTAURANT_NAME);
+        const hostName = this.props.navigation.getParam(PARAM_HOST_NAME);
+        const dateTimeString = this.props.navigation.getParam(PARAM_DATE_TIME_STRING);
+        this.setState({planKey, restaurantName, hostName, dateTimeString})
         if(Platform.OS === 'ios'){
             this.getContacts();
         }
@@ -212,7 +228,8 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
     sendSMSInvite = () => {
         this.makeInvitationLink()
         .then((link)=>{
-            const message = `Hey,\n\nI have created a plan on EatSnP app, use the link below to see the invite.\n${link}\n\nEatSnP is realy great for sharing and planning your food experiences.`;
+            const {hostName, restaurantName, dateTimeString} = this.state;
+            const message = `Hello,\n\n${hostName} has invited you to meet up at ${restaurantName} on ${dateTimeString}.\n\nPlease follow the link below to see details.\n${link}`;
         
             // compile contact phone numbers
             const phoneNumbers = [];
@@ -240,7 +257,8 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
     copyInvitationLink = async () => {
         try{
             const link = await this.makeInvitationLink();
-            const message = `Hey,\n\nI have created a plan on EatSnP app, use the link below to see the invite.\n${link}\n\nEatSnP is realy great for sharing and planning your food experiences.`
+            const {hostName, restaurantName, dateTimeString} = this.state;
+            const message = `Hello,\n\n${hostName} has invited you to meet up at ${restaurantName} on ${dateTimeString}.\n\nPlease follow the link below to see details.\n${link}`;
                 
             Clipboard.setString(message);
             const result = await Share.share({message});

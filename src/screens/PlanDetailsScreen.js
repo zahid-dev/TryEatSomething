@@ -20,6 +20,7 @@ import {withNavigation} from 'react-navigation';
 import * as Contract from '../firebase/Contract';
 import * as DatabaseHelpers from '../firebase/DatabaseHelpers';
 import * as Values from '../res/Values';
+import HelperMethods from '../utility/HelperMethods';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import PlanMembers from '../components/PlanMembers';
 import RestaurantHeader from '../components/RestaurantHeader';
@@ -70,12 +71,23 @@ class PlanDetailsScreen extends React.Component<Props, State> {
 
   componentDidMount(){
     this.listenForPlan();
+    this.setUserData();
   }
 
   componentWillUnmount(){
     this.unlistenForPlan();
   }
 
+
+  setUserData(){
+    const uid = firebase.auth().currentUser.uid;
+    DatabaseHelpers.User.getUser(uid)
+    .then((user)=>{
+      if(user){
+        this.setState({user})
+      }
+    })   
+  }
 
   planCallbackListener = (plan) => {
     var thisMemberStatus = Contract.STATUS_PENDING;
@@ -150,8 +162,15 @@ class PlanDetailsScreen extends React.Component<Props, State> {
 
   onAddMembersPress = () => {
     const {navigation} = this.props;
+    const {plan} = this.state;
+    const restaurantName = plan.restaurant.name
+    const dateTimeString = moment(plan.plannedForTimestamp).format("dddd, MMM Do, h:mm A");
+    const hostName = this.state.user.Name;
     const params = { 
-        planKey:navigation.getParam(PARAM_PLAN_KEY)
+        planKey:navigation.getParam(PARAM_PLAN_KEY),
+        restaurantName,
+        hostName,
+        dateTimeString,
     }
 
     this.props.navigation.navigate(Values.Screens.SCREEN_INVITE_CONTACTS, params)

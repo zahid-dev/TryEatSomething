@@ -67,6 +67,7 @@ export default class MakePlanScreen extends React.Component<Props, State> {
         this.initPlanKey();
     }
 
+
     fetchUser(){
         const uid = firebase.auth().currentUser.uid;
         DatabaseHelpers.User.getUser(uid)
@@ -78,7 +79,8 @@ export default class MakePlanScreen extends React.Component<Props, State> {
                 planMember.status = Contract.PlanMember.STATUS_GOING
 
                 this.setState(state=>{
-                    state.members.push(planMember)
+                    state.user = user;
+                    state.members.push(planMember);
                     return state;
                 })
             })
@@ -123,12 +125,19 @@ export default class MakePlanScreen extends React.Component<Props, State> {
                         // alert("Plan created successfully")
                         // this.props.navigation.goBack();
                         const {navigation} = this.props;
+                        const {plan} = this.state;
+                        const restaurantName = plan.restaurant.name
+                        const dateTimeString = moment(plan.plannedForTimestamp).format("dddd, MMM Do, h:mm A");
+                        const hostName = this.state.user.Name;
+                        const params = { 
+                            homeScreenKey:navigation.state.key,
+                            planKey,
+                            restaurantName,
+                            hostName,
+                            dateTimeString,
+                        }
                         navigation.navigate(
-                            Values.Screens.SCREEN_INVITE_CONTACTS, 
-                            {
-                                planKey,
-                                homeScreenKey:navigation.state.key
-                            })
+                            Values.Screens.SCREEN_INVITE_CONTACTS, params,)
                     }
                 })
                 .catch(err=>{

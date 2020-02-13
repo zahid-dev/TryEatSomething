@@ -19,6 +19,7 @@ import firebase from '@react-native-firebase/app';
 import '@react-native-firebase/auth';
 import '@react-native-firebase/database';
 import '@react-native-firebase/dynamic-links';
+import '@react-native-firebase/messaging';
 
 import FirebaseLogin from './FirebaseLogin';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
@@ -45,7 +46,8 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 console.disableYellowBox = true;
 
-class HomeScreen extends React.Component<{}> {
+
+class HomeScreen extends React.Component<*,*> {
 
   state = {
     isLogin: false, 
@@ -55,6 +57,7 @@ class HomeScreen extends React.Component<{}> {
 
   
   componentDidMount() {
+    this.registerAppWithFCM();
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.props.navigation.navigate('Tabs')
@@ -65,6 +68,9 @@ class HomeScreen extends React.Component<{}> {
     });
   }
 
+  async registerAppWithFCM(){
+    await firebase.messaging().registerForRemoteNotifications();
+  }
 
   render() {
     console.warn(this.state.uid);

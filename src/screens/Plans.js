@@ -66,7 +66,6 @@ class Plans extends React.Component {
 
     const {navigation} = this.props;
     navigation.navigate(Values.Screens.SCREEN_PLAN_DETAILS, {planKey})
-
   }
 
   _renderActivityIndicator(){
@@ -94,7 +93,7 @@ class Plans extends React.Component {
     return (
       <View style={styles.container}>
         {
-          !plans.length?
+          plans.length?
             <FlatList 
               data={this.state.plans}
               renderItem={this._renderItem}
@@ -103,9 +102,7 @@ class Plans extends React.Component {
             <View style={styles.loadingPlaceholder}>
               <Text style={styles.textPlaceholder}>No Plans Found</Text>
             </View>
-            
         }
-     
       </View>
     );
   }

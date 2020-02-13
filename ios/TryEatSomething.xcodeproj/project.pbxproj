@@ -72,6 +72,7 @@
 		EE96EBB8B913485DAB9493F1 /* Pods-TryEatSomething.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TryEatSomething.release.xcconfig"; path = "Target Support Files/Pods-TryEatSomething/Pods-TryEatSomething.release.xcconfig"; sourceTree = "<group>"; };
 		F3F5E6F5C71271A275D146D9 /* libPods-TryEatSomethingTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TryEatSomethingTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB4D47A823583B5A007B0EED /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		FBBE50BA23F2E8DC00623FEC /* EatSnp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = EatSnp.entitlements; path = TryEatSomething/EatSnp.entitlements; sourceTree = "<group>"; };
 		FBC26F403FC04D6CB80BC9E8 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		FF724B6F27AF80D706CA5E26 /* Pods-TryEatSomething-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TryEatSomething-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-TryEatSomething-tvOSTests/Pods-TryEatSomething-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -115,6 +116,7 @@
 		13B07FAE1A68108700A75B9A /* TryEatSomething */ = {
 			isa = PBXGroup;
 			children = (
+				FBBE50BA23F2E8DC00623FEC /* EatSnp.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -514,12 +516,13 @@
 			baseConfigurationReference = 65F70F8CD818582BED6AEE1B /* Pods-TryEatSomething.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 10;
+				CODE_SIGN_ENTITLEMENTS = TryEatSomething/EatSnp.entitlements;
+				CURRENT_PROJECT_VERSION = 12;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 4UB6CSK3W3;
 				INFOPLIST_FILE = TryEatSomething/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.9;
+				MARKETING_VERSION = 2.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -536,11 +539,12 @@
 			baseConfigurationReference = EE96EBB8B913485DAB9493F1 /* Pods-TryEatSomething.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 10;
+				CODE_SIGN_ENTITLEMENTS = TryEatSomething/EatSnp.entitlements;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 4UB6CSK3W3;
 				INFOPLIST_FILE = TryEatSomething/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.9;
+				MARKETING_VERSION = 2.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
