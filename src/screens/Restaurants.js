@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Image,
   PermissionsAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import firebase from '@react-native-firebase/app';
 import {Card, CardSection} from '../components/common';
@@ -31,7 +32,9 @@ type DataItem = {
 }
 
 type State = {
-  dataArray:Array<DataItem>
+  isLoading:boolean,
+  dataArray:Array<DataItem>,
+  offset:number,
 }
 
 
@@ -74,8 +77,10 @@ class Restaurants extends React.Component<Props, State> {
     latitude: [],
     longitude: [],
     uid: '',
+    offset:0,
     showFilter:false,
     category:'default',
+    isLoading:false,
   };
 
   componentDidMount() {
@@ -90,6 +95,7 @@ class Restaurants extends React.Component<Props, State> {
     this.props.navigation.setParams({
       updateSearch:(query)=>{
         console.log("Searching for: " + query)
+        this.setState({dataArray:[], query});
         this.getVenues({query})
       },
       onFunnelPress:()=>{
@@ -152,11 +158,15 @@ class Restaurants extends React.Component<Props, State> {
   }
 
   getVenues(params = {}) {
+    if(this.state.isLoading) return null;
+
+    this.setState({isLoading:true});
 
     const category = params.category || this.state.category;
     const query = params.query || this.state.query;
     const lat = params.latitude || this.state.latitude;
     const long = params.longitude || this.state.longitude;
+    const offset = params.offset || 0;
 
     var url = 'https://api.foursquare.com/v2/venues/explore?'
     url += 'client_id=SQCAM5YS25I5GT23G52WXHGWS5FE4C300IUBNEJWUD22GG2J'
@@ -164,16 +174,16 @@ class Restaurants extends React.Component<Props, State> {
     url += '&v=20150729'
     url += `&ll=${lat},${long}`;
     url += `&limit=${Values.Numbers.FOURSQUARE_RESULT_LIMIT}`;
-
-    url += `&categoryId=${this.getCategoryId(category)}`;
+    url += `&offset=${offset}`
+    
 
     if(query){
       url += `&query=${query}`
+    }else{
+      url += `&categoryId=${this.getCategoryId(category)}`;
     }
 
-
-    params.dataArray = [];
-    this.setState(params);
+    
     axios
       .get(url)
       .then(res => {
@@ -199,10 +209,21 @@ class Restaurants extends React.Component<Props, State> {
           }
           data.push(obj);
         });
-        this.setState({dataArray:data});
-        this.getVenueDetails(data);
+        this.setState((state) => {
+          if(offset){
+            state.dataArray = state.dataArray.concat(data);
+          }else{
+            state.dataArray = data;
+          }
+          state.offset = offset + Values.Numbers.FOURSQUARE_RESULT_LIMIT;
+          state.isLoading = false;
+          console.log("Updating State To: " + JSON.stringify(state, null, '\t'))
+          return state;
+        });
+        this.getVenueDetails(data, offset);
       })
       .catch((err)=>{
+        this.setState({isLoading:false})
         console.warn("Failed to fetch resturants: " + JSON.stringify(err) );
       })
    
@@ -210,7 +231,7 @@ class Restaurants extends React.Component<Props, State> {
 
 
 
-  getVenueDetails = async venues => {
+  getVenueDetails = async (venues, offset) => {
     //console.warn(venues);
     await Promise.all(
       venues.map((item, index) => {
@@ -252,7 +273,12 @@ class Restaurants extends React.Component<Props, State> {
         data.push(dataItem);
 
       });
-      this.setState({dataArray: data});
+
+
+      this.setState((state)=>{
+        Array.prototype.splice.apply(state.dataArray, [offset, data.length].concat(data));
+        return state;
+      });
     })
     .catch(err=>{
       console.warn("Failed to fetch venue details: " + JSON.stringify(err));
@@ -305,9 +331,17 @@ class Restaurants extends React.Component<Props, State> {
 
     return (
       <View style={styles.RestaurantCardTopBarButtonContainer}>
-        {_renderHeaderItem('FOOD', category === 'food', ()=>{ this.getVenues({category:'food'})} )}
-        {_renderHeaderItem('DRINKS', category === 'drinks', ()=>{ this.getVenues({category:'drinks'})} )}
-        {_renderHeaderItem('COFFEE', category === 'coffee', ()=>{ this.getVenues({category:'coffee'})} )}
+        {_renderHeaderItem('FOOD', category === 'food', ()=>{ this.setState({dataArray:[], category:'food'}); this.getVenues({category:'food'})} )}
+        {_renderHeaderItem('DRINKS', category === 'drinks', ()=>{this.setState({dataArray:[], category:'drinks'}); this.getVenues({category:'drinks'})} )}
+        {_renderHeaderItem('COFFEE', category === 'coffee', ()=>{this.setState({dataArray:[], category:'coffee'}); this.getVenues({category:'coffee'})} )}
+      </View>
+    )
+  }
+
+  _renderActivitIndicator = () => {
+    return (
+      <View>
+        <ActivityIndicator size={'large'} animating={true} />
       </View>
     )
   }
@@ -320,9 +354,13 @@ class Restaurants extends React.Component<Props, State> {
         style={{flex: 1}}
         data={data}
         extraData={this.state}
+        onEndReached={()=>{
+          this.getVenues({offset:this.state.offset})
+        }}
         renderItem={this._renderItem}
         keyExtractor={(item, index)=>item.id}
         ListHeaderComponent={this._renderListHeader}
+        ListFooterComponent={this._renderActivitIndicator}
       />
     );
   }
