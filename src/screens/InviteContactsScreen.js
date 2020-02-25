@@ -69,6 +69,7 @@ type State = {
     hostName:string,
     restaurantName:string,
     dateTimeString:string,
+    noContactsFound:boolean,
 }
 
 export default class InviteContactsScreen extends React.Component<Props, State> {
@@ -84,6 +85,7 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
         hostName:'',
         restaurantName:'',
         dateTimeString:'',
+        noContactsFound:false,
     }
 
     static navigationOptions = (args:any) => {
@@ -177,7 +179,7 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
         if (err === 'denied'){
           // error
           this.setState({isLoading:false})
-        } else {
+        } else if(contacts.length) {
           // contacts returned in Array
           contacts = contacts.map((contact)=>{
             if(!contact.displayName){
@@ -195,7 +197,9 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
                 return 1
             return 0 //default return value (no sorting)
           })
-          this.setState({contacts, isLoading:false})
+          this.setState({contacts, isLoading:false, noContactsFound:false})
+        }else{
+            this.setState({isLoading:false, noContactsFound:true})
         }
       }
 
@@ -322,6 +326,15 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
         }
     }
 
+    _renderNoContactsPlaceholder(){
+        if(!this.state.noContactsFound) return null;
+        return (
+            <View>
+                <Text style={styles.noContactsText}>No Contacts Found</Text>
+            </View>
+        )
+    }
+
     _renderKeyExtractor = (item) => {return item.id}
 
     _renderActionPanel = () => {
@@ -344,6 +357,8 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
         )
     }
 
+
+
     render(){
         const planKey = this.props.navigation.getParam(PARAM_PLAN_KEY);
         const contacts = this.state.contacts;
@@ -351,6 +366,7 @@ export default class InviteContactsScreen extends React.Component<Props, State> 
             <View style={{padding:16, flex:1}}>
                 
                 {this._renderActivityIndicator()}
+                {this._renderNoContactsPlaceholder()}
                 <View style={{flex:1}}>
                 <FlatList
                     keyboardShouldPersistTaps={'handled'}
@@ -383,5 +399,12 @@ const styles = StyleSheet.create({
         backgroundColor:Values.Colors.COLOR_PRIMARY,
         margin:16,
         borderRadius:12,
+    },
+    noContactsText:{
+        marginTop:56,
+        textAlign:'center',
+        fontSize:22,
+        color:Values.Colors.COLOR_GRAY,
+        fontWeight:'300',
     }
 })

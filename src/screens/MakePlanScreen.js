@@ -120,29 +120,28 @@ export default class MakePlanScreen extends React.Component<Props, State> {
             plan.createdAtTimestamp = createdAt
 
             DatabaseHelpers.Plan.createPlan(planKey, plan)
-                .then(status=>{
-                    if(status){
-                        // alert("Plan created successfully")
-                        // this.props.navigation.goBack();
-                        const {navigation} = this.props;
-                        const {plan} = this.state;
-                        const restaurantName = plan.restaurant.name
-                        const dateTimeString = moment(plan.plannedForTimestamp).format("dddd, MMM Do, h:mm A");
-                        const hostName = this.state.user.Name;
-                        const params = { 
-                            homeScreenKey:navigation.state.key,
-                            planKey,
-                            restaurantName,
-                            hostName,
-                            dateTimeString,
-                        }
-                        navigation.navigate(
-                            Values.Screens.SCREEN_INVITE_CONTACTS, params,)
+            .then((status) => {
+                if(status){
+                    // alert("Plan created successfully")
+                    // this.props.navigation.goBack();
+                    const {navigation} = this.props;
+                    const restaurantName = plan.restaurant.name
+                    const dateTimeString = moment(plan.plannedForTimestamp).format("dddd, MMM Do, h:mm A");
+                    const hostName = this.state.user.Name;
+                    const params = { 
+                        homeScreenKey:navigation.state.key,
+                        planKey,
+                        restaurantName,
+                        hostName,
+                        dateTimeString,
                     }
-                })
-                .catch(err=>{
-                    alert("Failed to create plan, " + err.message)
-                })
+                    navigation.navigate(
+                        Values.Screens.SCREEN_INVITE_CONTACTS, params,)
+                }
+            })
+            .catch(err=>{
+                alert("Failed to create plan, " + err.message)
+            })
         }else{
             console.log("Not all plan requirements are fullfilled: " + JSON.stringify(this.state))
             alert("Please fill all required fields for creating plan")
